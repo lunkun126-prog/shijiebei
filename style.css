@@ -461,16 +461,31 @@ body.calc-open .calc-backdrop { opacity: 1; pointer-events: auto; }
   .calc-dock .calc-row { flex-direction: column; gap: 10px; }  /* 窄栏改竖排 */
 }
 
-/* 赔率按钮 */
-.odds-label { margin-top: 13px; font-size: 11px; color: var(--muted); letter-spacing: 0.02em; }
+/* 诚实解读行:市场胜率 vs 回本胜率 */
+.honest {
+  margin-top: 12px;
+  padding: 9px 12px;
+  background: rgba(0,0,0,0.025);
+  border: 0.5px solid var(--hair);
+  border-radius: var(--r-btn);
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--text2);
+  letter-spacing: -0.004em;
+}
+.honest b { color: var(--text); font-weight: 700; }
+
+/* 赔率按钮(国际赔率 / 竞彩估 / 回本%) */
+.odds-label { margin-top: 13px; font-size: 11px; color: var(--muted); letter-spacing: 0.01em; }
+.odds-label .ob-legend { color: var(--text2); }
 .odds-row { display: flex; gap: 8px; margin-top: 7px; }
 .odd-btn {
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
-  padding: 9px 4px;
+  gap: 1px;
+  padding: 8px 4px 7px;
   background: #f5f5f7;
   border: 0.5px solid var(--hair2);
   border-radius: var(--r-btn);
@@ -481,9 +496,49 @@ body.calc-open .calc-backdrop { opacity: 1; pointer-events: auto; }
               background var(--t-fast) var(--ease-io),
               transform var(--t-fast) var(--ease);
 }
-.odd-btn b { color: var(--accent); font-size: 15px; font-weight: 700; }
-.odd-btn:hover { border-color: var(--accent); background: rgba(0,113,227,0.14); transform: translateY(-1px); }
+.odd-btn .ob-lbl { font-size: 11px; color: var(--muted); }
+.odd-btn b { color: var(--accent); font-size: 15px; font-weight: 700; line-height: 1.1; }
+.odd-btn .ob-jc { font-style: normal; font-size: 9.5px; color: var(--muted2); }
+.odd-btn .ob-be { font-style: normal; font-size: 10px; font-weight: 600; margin-top: 1px; }
+.odd-btn.ob-bad  .ob-be { color: var(--lose); }   /* 回本线比市场胜率还高=长期亏 */
+.odd-btn.ob-good .ob-be { color: var(--win); }
+.odd-btn:hover { border-color: var(--accent); background: rgba(0,113,227,0.10); transform: translateY(-1px); }
 .odd-btn:active { transform: scale(0.97); }
+.odds-foot { margin-top: 8px; font-size: 10.5px; color: var(--muted); line-height: 1.55; }
+.odds-foot b { color: var(--text2); }
+
+/* 计算器·长期期望(硬币另一面) */
+.calc-ev {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 0.5px dashed var(--hair2);
+  font-size: 12px;
+  color: var(--text2);
+  line-height: 1.55;
+  text-align: left;
+}
+.calc-ev b { font-size: 14px; }
+.calc-ev .calc-ev-note { display: block; margin-top: 4px; font-size: 11px; color: var(--muted); }
+.calc-ev.calc-ev-hint { color: var(--muted); text-align: center; }
+
+/* 示例买法折叠 */
+.recs-fold > summary {
+  list-style: none;
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+  margin-bottom: 0;
+}
+.recs-fold > summary::-webkit-details-marker { display: none; }
+.recs-fold[open] > summary { margin-bottom: 12px; }
+.fold-caret {
+  margin-left: auto;
+  display: inline-block;
+  color: var(--muted);
+  font-size: 13px;
+  transition: transform var(--t-fast) var(--ease);
+}
+.recs-fold[open] .fold-caret { transform: rotate(90deg); }
 
 /* ============================================
    今日示例买法
@@ -543,7 +598,7 @@ body.calc-open .calc-backdrop { opacity: 1; pointer-events: auto; }
 }
 .rec:hover { box-shadow: var(--shadow-2), var(--glass-hi); transform: translateY(-2px); }
 /* 每个框框带各自的分类颜色:左侧色条 + 淡色调底(瞻海色板) */
-.rec.safe     { border-left-color: var(--green);  background: linear-gradient(180deg, rgba(52,199,89,0.13), rgba(52,199,89,0.03)), var(--card-strong); }
+.rec.safe     { border-left-color: var(--muted);  background: linear-gradient(180deg, rgba(120,120,128,0.10), rgba(120,120,128,0.02)), var(--card-strong); }
 .rec.value    { border-left-color: var(--orange); background: linear-gradient(180deg, rgba(255,149,0,0.14), rgba(255,149,0,0.03)), var(--card-strong); }
 .rec.score    { border-left-color: var(--purple); background: linear-gradient(180deg, rgba(175,82,222,0.13), rgba(175,82,222,0.03)), var(--card-strong); }
 .rec.handicap { border-left-color: var(--blue);   background: linear-gradient(180deg, rgba(0,113,227,0.13), rgba(0,113,227,0.03)), var(--card-strong); }
@@ -560,7 +615,7 @@ body.calc-open .calc-backdrop { opacity: 1; pointer-events: auto; }
   background-image: linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0) 55%);
   box-shadow: 0 1px 3px rgba(0,0,0,0.28);
 }
-.rec-tag.safe     { background-color: var(--green); }
+.rec-tag.safe     { background-color: #8e8e93; }
 .rec-tag.value    { background-color: var(--orange); }
 .rec-tag.score    { background-color: var(--purple); }
 .rec-tag.handicap { background-color: var(--blue); }

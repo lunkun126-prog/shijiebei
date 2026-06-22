@@ -88,6 +88,19 @@ function favoredText(m) {
   return `${arr[0].side} 占优(${arr[0].p}%)`;
 }
 
+// 诚实解读:把"市场胜率"和"回本胜率"摆一起,差值就是长期要交的水
+function honestLine(m) {
+  const f = favOf(m); // {side, odd, p}
+  if (f.odd == null) return `市场看好 <b>${escapeHtml(f.side)} ${f.p}%</b>(暂无倍率)`;
+  const be = +(100 / f.odd).toFixed(1);
+  const gap = +(be - f.p).toFixed(1);
+  let verdict;
+  if (gap > 0) verdict = `,但要赢 <b>${be}%</b> 才回本(比市场高 ${gap} 个点)→ 长期亏`;
+  else if (gap < 0) verdict = `,回本线仅 <b>${be}%</b>(比市场低 ${Math.abs(gap)} 点)→ 理论略有价值`;
+  else verdict = `,回本线也 <b>${be}%</b> → 长期基本持平`;
+  return `市场看好 <b>${escapeHtml(f.side)} ${f.p}%</b>,倍率 ${f.odd}${verdict}。竞彩实开更低,回本更难。`;
+}
+
 function matchCard(m) {
   const card = document.createElement("div");
   // 左侧色条按"最被看好的结果"上色:主胜绿 / 平局橙 / 客胜红
@@ -116,26 +129,42 @@ function matchCard(m) {
       <span class="lg"><span class="dot draw"></span>平局</span>
       <span class="lg"><span class="dot lose"></span>客胜</span>
     </div>
-    <div class="prob-legend" style="margin-top:6px">
-      <span class="favored">📈 ${escapeHtml(favoredText(m))}</span>
-    </div>
+    <div class="honest">📊 ${honestLine(m)}</div>
     ${oddsRow(m)}
   `;
   return card;
 }
 
+// 回本胜率 = 1/赔率:要赢这个比例才不亏(和市场胜率一对比就懂)
+function breakeven(odd) {
+  return +(100 / odd).toFixed(1);
+}
+// 竞彩实开估算:国内竞彩整体返还率比国际盘低,粗估 ×0.92(仅量级参考,以竞彩 App 实际为准)
+function jingcaiEst(odd) {
+  return +(odd * 0.92).toFixed(2);
+}
+
 function oddsRow(m) {
   if (m.odd_home == null) return ""; // 旧数据无倍率时不显示
-  const btn = (lbl, odd, bet) =>
-    `<button class="odd-btn" data-odd="${odd}" data-bet="${escapeHtml(bet)}" title="点我试算这一注能赚多少">
-       <span>${lbl}</span><b>${odd}</b></button>`;
+  // 每个赔率带:国际赔率 / 竞彩估 / 回本%。回本%比该结果市场胜率还高就标红(长期亏)
+  const btn = (lbl, odd, bet, p) => {
+    const be = breakeven(odd);
+    const bad = be > p; // 注定亏
+    return `<button class="odd-btn ${bad ? "ob-bad" : "ob-good"}" data-odd="${odd}" data-p="${p}" data-bet="${escapeHtml(bet)}" title="点我试算这一注能赚多少">
+       <span class="ob-lbl">${lbl}</span>
+       <b>${odd}</b>
+       <em class="ob-jc">竞彩≈${jingcaiEst(odd)}</em>
+       <i class="ob-be">回本${be}%</i>
+     </button>`;
+  };
   return `
-    <div class="odds-label">💡 点任意赔率,自动带进计算器试算:</div>
+    <div class="odds-label">💡 点任意赔率自动试算 · <span class="ob-legend">回本%=要赢多少才不亏</span></div>
     <div class="odds-row">
-      ${btn("主胜", m.odd_home, cn(m.home) + " 胜")}
-      ${btn("平局", m.odd_draw, cn(m.home) + " vs " + cn(m.away) + " 打平")}
-      ${btn("客胜", m.odd_away, cn(m.away) + " 胜")}
-    </div>`;
+      ${btn("主胜", m.odd_home, cn(m.home) + " 胜", m.p_home)}
+      ${btn("平局", m.odd_draw, cn(m.home) + " vs " + cn(m.away) + " 打平", m.p_draw)}
+      ${btn("客胜", m.odd_away, cn(m.away) + " 胜", m.p_away)}
+    </div>
+    <div class="odds-foot">上排是<b>国际盘</b>实开,<b>竞彩≈</b>是国内竞彩估开(更低)。把上面<b>市场胜率</b>和这里<b>回本%</b>对一下:回本%还更高,差的几个点就是长期注定要交的水。</div>`;
 }
 
 function escapeHtml(s) {
@@ -263,12 +292,12 @@ function renderRecs(matches) {
   // 1) 胜平负·稳胆:最被看好的一场, 买它赢
   cards.push(
     recCard(
-      "胜平负·稳胆",
+      "高胜率·低回报",
       "safe",
       `${cn(safe.m.home)} vs ${cn(safe.m.away)} · ${beijingTimeLabel(safe.m.kickoff_utc)}`,
-      `买 <b>${safe.f.side}</b>(胜率 ${safe.f.p}% · 倍率 ${safe.f.odd})`,
+      `买 <b>${safe.f.side}</b>(市场胜率 ${safe.f.p}% · 倍率 ${safe.f.odd} · 回本 ${breakeven(safe.f.odd)}%)`,
       moneyBox(safe.f.odd),
-      `胜率高倍率低,赢面大但赚得少。`
+      `没有"稳赢":赢面大但倍率低,回本线常和胜率贴得很近,长期是负期望。`
     )
   );
   // 2) 胜平负·性价比:胜率 55~72% 区间, 倍率适中
@@ -338,6 +367,7 @@ function render(activeKey) {
 }
 
 // ===== 盈利计算器 =====
+let CUR_BET = null; // {p, odd} 最近从赔率按钮带入的, 用于算"长期期望"(硬币另一面)
 function fmtMoney(n) {
   return "¥" + n.toLocaleString("zh-CN", { maximumFractionDigits: 2 });
 }
@@ -352,10 +382,25 @@ function updateCalc() {
   }
   const payout = stake * odd;
   const profit = payout - stake;
+  // 长期期望:只有从赔率按钮带入(知道市场概率)时才算得出
+  let evHtml;
+  if (CUR_BET && Math.abs(CUR_BET.odd - odd) < 1e-9) {
+    const p = CUR_BET.p / 100;
+    const expReturn = stake * odd * p; // 长期平均能拿回
+    const ev = expReturn - stake;      // 长期平均盈亏(几乎总是负)
+    const sign = ev >= 0 ? "赚" : "亏";
+    const cls = ev >= 0 ? "green" : "calc-lose";
+    evHtml = `<div class="calc-ev">📉 按市场概率(${CUR_BET.p}%),这注 ${fmtMoney(stake)} 长期期望约 <b>${fmtMoney(
+      expReturn
+    )}</b>(平均每注${sign} <b class="${cls}">${fmtMoney(Math.abs(ev))}</b>)
+      <span class="calc-ev-note">上面的净赚是"中了"的上限,这才是硬币另一面;竞彩赔率更低,实际更差。</span></div>`;
+  } else {
+    evHtml = `<div class="calc-ev calc-ev-hint">想看「长期期望」?去比赛里点一个赔率带进来,按市场胜率帮你算硬币另一面。</div>`;
+  }
   out.className = "calc-result ok";
   out.innerHTML = `中了拿回 <b>${fmtMoney(payout)}</b> · 净赚 <b class="green">${fmtMoney(
     profit
-  )}</b><br/><span class="calc-lose">没中则亏掉本金 ${fmtMoney(stake)}</span>`;
+  )}</b><br/><span class="calc-lose">没中则亏掉本金 ${fmtMoney(stake)}</span>${evHtml}`;
 }
 // 窄屏(<1320px)=抽屉形态;宽屏=右侧常驻侧栏
 function isSheetMode() {
@@ -370,7 +415,8 @@ function closeCalc() {
 
 function bindCalc() {
   document.getElementById("stake").addEventListener("input", updateCalc);
-  document.getElementById("odd").addEventListener("input", updateCalc);
+  // 手动改倍率 → 失去市场概率, 不显示长期期望
+  document.getElementById("odd").addEventListener("input", () => { CUR_BET = null; updateCalc(); });
 
   // 悬浮按钮 / 关闭 / 遮罩 / Esc
   const fab = document.getElementById("calcFab");
@@ -390,6 +436,7 @@ function bindCalc() {
     const btn = e.target.closest(".odd-btn");
     if (!btn) return;
     document.getElementById("odd").value = btn.dataset.odd;
+    CUR_BET = { p: parseFloat(btn.dataset.p), odd: parseFloat(btn.dataset.odd) };
     document.getElementById("calcBet").textContent = "已选:" + btn.dataset.bet + " @" + btn.dataset.odd;
     updateCalc();
     dismissBubble();
