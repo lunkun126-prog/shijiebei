@@ -116,6 +116,38 @@
   .side-ball { display: none; }
 }
 
+/* 手机版:在内容流里居中显示一颗合影球 */
+.mobile-ball {
+  display: none;
+  text-align: center;
+  margin: 28px auto 0;
+  position: relative;
+  z-index: 1;
+}
+.mobile-ball img {
+  width: clamp(140px, 42vw, 220px);
+  filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.45));
+}
+.mobile-ball span {
+  display: block;
+  margin-top: 10px;
+  font-weight: 800;
+  font-size: 18px;
+  letter-spacing: 3px;
+  color: #ffd45e;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7), 0 0 4px rgba(255, 180, 40, 0.4);
+}
+@media (max-width: 1180px) {
+  .mobile-ball { display: block; }
+}
+
+/* 小屏微调:背景球轨道淡一点, 内容内边距收紧 */
+@media (max-width: 560px) {
+  .space { opacity: 0.7; }
+  .calc { margin-left: 12px; margin-right: 12px; }
+  .topbar { padding: 22px 14px 12px; }
+}
+
 /* 内容压在背景球上面 */
 .topbar, .date-tabs, .calc, .board, .footer { position: relative; z-index: 1; }
 
