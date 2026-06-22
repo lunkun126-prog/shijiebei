@@ -164,8 +164,8 @@ function suggestScore(m) {
 function moneyBox(odd) {
   const payout = STAKE * odd;
   const profit = payout - STAKE;
-  return `<span class="win">中了拿回 <b>${fmtMoney(payout)}</b>,净赚 ${fmtMoney(profit)}</span>
-          <span class="lose">没中亏 ${fmtMoney(STAKE)}</span>`;
+  return `<span class="win">中 <b>${fmtMoney(payout)}</b>·赚 ${fmtMoney(profit)}</span>
+          <span class="lose">没中 -${fmtMoney(STAKE)}</span>`;
 }
 
 function recCard(tag, tagCls, matchLabel, pickHtml, moneyHtml, note) {
@@ -198,7 +198,7 @@ function handicapCard(x) {
     `${cn(m.home)} vs ${cn(m.away)} · ${beijingTimeLabel(m.kickoff_utc)}`,
     `买 <b>${team} 让${pt}球</b> 胜(倍率 ${odd})`,
     moneyBox(odd),
-    `${team}先让${pt}球再算赢 → 它够强时,倍率比直接买胜更划算;但让球后赢得不够多就白搭。`
+    `让球后还能赢,倍率比直接买胜高。`
   );
 }
 
@@ -214,7 +214,7 @@ function totalsCard(x) {
       `${cn(m.home)} vs ${cn(m.away)} · ${beijingTimeLabel(m.kickoff_utc)}`,
       `买 <b>大于${m.total_point}球</b>(倍率 ${m.over_odd})`,
       moneyBox(m.over_odd),
-      `${f.side}实力碾压、大概率进球多 → 偏大球(全场≥3 球)。⚠️ 弱队摆大巴闷平是大球杀手,只在悬殊场玩。`
+      `强队碾压偏大球;弱队闷平是杀手,只悬殊场玩。`
     );
   }
   return "";
@@ -232,7 +232,7 @@ function parlayCard(top) {
     `${cn(a.m.home)}vs${cn(a.m.away)} ＋ ${cn(b.m.home)}vs${cn(b.m.away)}`,
     `串 <b>${a.f.side}</b>@${a.f.odd} × <b>${b.f.side}</b>@${b.f.odd} = <b>${combo}倍</b>`,
     moneyBox(combo),
-    `两场都猜中才算赢 → 倍率相乘更高,但中奖率也相乘(约 ${hitRate}%),比单买难。稳健<b>最多 2 串 1</b>,别串更多场。`
+    `两场全中才算赢,中奖率约 ${hitRate}%。稳健最多 2 串 1。`
   );
 }
 
@@ -263,7 +263,7 @@ function renderRecs(matches) {
       `${cn(safe.m.home)} vs ${cn(safe.m.away)} · ${beijingTimeLabel(safe.m.kickoff_utc)}`,
       `买 <b>${safe.f.side}</b>(胜率 ${safe.f.p}% · 倍率 ${safe.f.odd})`,
       moneyBox(safe.f.odd),
-      `胜率高、倍率低 → 赢面大但赚得少。越稳的越不值钱,这就是规律。`
+      `胜率高倍率低,赢面大但赚得少。`
     )
   );
   // 2) 胜平负·性价比:胜率 55~72% 区间, 倍率适中
@@ -277,7 +277,7 @@ function renderRecs(matches) {
         `${cn(value.m.home)} vs ${cn(value.m.away)} · ${beijingTimeLabel(value.m.kickoff_utc)}`,
         `买 <b>${value.f.side}</b>(胜率 ${value.f.p}% · 倍率 ${value.f.odd})`,
         moneyBox(value.f.odd),
-        `胜率没那么悬殊、倍率高一点 → 风险和回报相对平衡。`
+        `胜率倍率较平衡,风险回报折中。`
       )
     );
   }
@@ -295,10 +295,9 @@ function renderRecs(matches) {
       "猜比分",
       "score",
       `${cn(safe.m.home)} vs ${cn(safe.m.away)} · ${beijingTimeLabel(safe.m.kickoff_utc)}`,
-      `猜 <b>${scLine}</b>(${safe.f.side}赢面大,最可能这个方向)`,
-      `<span class="lose">猜中赚得多、猜错亏 ${fmtMoney(STAKE)}</span>`,
-      `⚠️ 比分玩法倍率盘口里没有,本页给不了精确数。强队 2:0 在竞彩通常 <b>7~10 倍</b>(¥100 猜中约赚 ¥600~900)。
-       到竞彩 App 看到真实倍率后,填进上面计算器就能算出能赚多少。比分极难中,纯属娱乐。`
+      `猜 <b>${scLine}</b>(${safe.f.side}赢面大)`,
+      `<span class="lose">猜中赚得多 · 猜错 -${fmtMoney(STAKE)}</span>`,
+      `竞彩约 7~10 倍,去 App 看真倍率填上方计算器算。极难中,娱乐。`
     )
   );
   // 6) 2串1:最稳的两场串一起
