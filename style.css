@@ -287,9 +287,10 @@ body {
 .calc {
   max-width: 760px;
   margin: 14px auto 0;
-  padding: 18px 20px;
-  background: var(--card-strong);
+  padding: 18px 20px 18px 19px;
+  background: linear-gradient(180deg, rgba(52,199,89,0.10), rgba(52,199,89,0.02)), var(--card-strong);
   border: 0.5px solid var(--hair2);
+  border-left: 4px solid var(--green);
   border-radius: var(--r-card);
   box-shadow: var(--shadow-2), var(--glass-hi);
 }
@@ -443,14 +444,22 @@ body {
 .rec {
   background: var(--card);
   border: 0.5px solid var(--hair2);
+  border-left: 3px solid var(--muted2);
   border-radius: var(--r-card);
-  padding: 13px 14px;
+  padding: 13px 14px 13px 13px;
   display: flex;
   flex-direction: column;
   box-shadow: var(--shadow-1), var(--glass-hi);
   transition: box-shadow var(--t) var(--ease), transform var(--t) var(--ease);
 }
 .rec:hover { box-shadow: var(--shadow-2), var(--glass-hi); transform: translateY(-2px); }
+/* 每个框框带各自的分类颜色:左侧色条 + 淡色调底(瞻海色板) */
+.rec.safe     { border-left-color: var(--green);  background: linear-gradient(180deg, rgba(52,199,89,0.13), rgba(52,199,89,0.03)), var(--card-strong); }
+.rec.value    { border-left-color: var(--orange); background: linear-gradient(180deg, rgba(255,149,0,0.14), rgba(255,149,0,0.03)), var(--card-strong); }
+.rec.score    { border-left-color: var(--purple); background: linear-gradient(180deg, rgba(175,82,222,0.13), rgba(175,82,222,0.03)), var(--card-strong); }
+.rec.handicap { border-left-color: var(--blue);   background: linear-gradient(180deg, rgba(0,113,227,0.13), rgba(0,113,227,0.03)), var(--card-strong); }
+.rec.total    { border-left-color: var(--teal);   background: linear-gradient(180deg, rgba(90,200,250,0.16), rgba(90,200,250,0.03)), var(--card-strong); }
+.rec.parlay   { border-left-color: var(--pink);   background: linear-gradient(180deg, rgba(255,45,85,0.13), rgba(255,45,85,0.03)), var(--card-strong); }
 .rec-head { display: flex; align-items: center; gap: 6px; margin-bottom: 7px; flex-wrap: wrap; }
 .rec-tag {
   font-size: 10px;
@@ -510,12 +519,17 @@ body {
 .match-card {
   background: var(--card);
   border: 0.5px solid var(--hair2);
+  border-left: 4px solid var(--muted2);
   border-radius: var(--r-card);
-  padding: 18px 18px 16px;
+  padding: 18px 18px 16px 17px;
   box-shadow: var(--shadow-2), var(--glass-hi);
   transition: box-shadow var(--t) var(--ease), transform var(--t) var(--ease);
 }
 .match-card:hover { box-shadow: var(--shadow-3), var(--glass-hi); transform: translateY(-2px); }
+/* 左侧色条按最被看好的结果上色 + 同色淡底 */
+.match-card.fav-home { border-left-color: var(--green);  background: linear-gradient(180deg, rgba(52,199,89,0.10), rgba(52,199,89,0.02)), var(--card-strong); }
+.match-card.fav-draw { border-left-color: var(--orange); background: linear-gradient(180deg, rgba(255,149,0,0.10), rgba(255,149,0,0.02)), var(--card-strong); }
+.match-card.fav-away { border-left-color: var(--lose);   background: linear-gradient(180deg, rgba(255,59,48,0.09), rgba(255,59,48,0.02)), var(--card-strong); }
 .match-head {
   display: flex;
   justify-content: space-between;

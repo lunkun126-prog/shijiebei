@@ -90,7 +90,12 @@ function favoredText(m) {
 
 function matchCard(m) {
   const card = document.createElement("div");
-  card.className = "match-card";
+  // 左侧色条按"最被看好的结果"上色:主胜绿 / 平局橙 / 客胜红
+  const favCls =
+    m.p_home >= m.p_draw && m.p_home >= m.p_away ? "fav-home"
+    : m.p_away >= m.p_draw && m.p_away >= m.p_home ? "fav-away"
+    : "fav-draw";
+  card.className = "match-card " + favCls;
   card.innerHTML = `
     <div class="match-head">
       <span class="kickoff">🕐 ${beijingTimeLabel(m.kickoff_utc)} 北京时间</span>
@@ -169,7 +174,7 @@ function moneyBox(odd) {
 }
 
 function recCard(tag, tagCls, matchLabel, pickHtml, moneyHtml, note) {
-  return `<div class="rec">
+  return `<div class="rec ${tagCls}">
     <div class="rec-head"><span class="rec-tag ${tagCls}">${tag}</span>
       <span class="rec-match">${escapeHtml(matchLabel)}</span></div>
     <div class="rec-pick">${pickHtml}</div>
