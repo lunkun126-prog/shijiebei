@@ -51,6 +51,7 @@ def devig_match(event: dict) -> dict | None:
         return None
 
     sums = {"home": 0.0, "draw": 0.0, "away": 0.0}
+    odd_sums = {"home": 0.0, "draw": 0.0, "away": 0.0}  # 原始赔率(含水位)累加, 用于展示倍率
     books_n = 0
 
     for bm in event.get("bookmakers", []):
@@ -75,6 +76,7 @@ def devig_match(event: dict) -> dict | None:
         total = sum(imp.values())  # >1, 多出来的就是水位
         for k in sums:
             sums[k] += imp[k] / total  # 去水位后的概率
+            odd_sums[k] += prices[k]   # 原始赔率(玩家实际看到的倍率)
         books_n += 1
 
     if books_n == 0:
@@ -92,6 +94,10 @@ def devig_match(event: dict) -> dict | None:
         "p_home": round(p["home"] * 100, 1),
         "p_draw": round(p["draw"] * 100, 1),
         "p_away": round(p["away"] * 100, 1),
+        # 平均赔率(玩家实际倍率, 含水位), 用于页面展示和计算器自动带入
+        "odd_home": round(odd_sums["home"] / books_n, 2),
+        "odd_draw": round(odd_sums["draw"] / books_n, 2),
+        "odd_away": round(odd_sums["away"] / books_n, 2),
         "books_n": books_n,
     }
 

@@ -114,8 +114,23 @@ function matchCard(m) {
     <div class="prob-legend" style="margin-top:6px">
       <span class="favored">📈 ${escapeHtml(favoredText(m))}</span>
     </div>
+    ${oddsRow(m)}
   `;
   return card;
+}
+
+function oddsRow(m) {
+  if (m.odd_home == null) return ""; // 旧数据无倍率时不显示
+  const btn = (lbl, odd, bet) =>
+    `<button class="odd-btn" data-odd="${odd}" data-bet="${escapeHtml(bet)}">
+       <span>${lbl}</span><b>${odd}</b></button>`;
+  return `
+    <div class="odds-label">赔率(点一下带进计算器):</div>
+    <div class="odds-row">
+      ${btn("主胜", m.odd_home, cn(m.home) + " 胜")}
+      ${btn("平局", m.odd_draw, cn(m.home) + " vs " + cn(m.away) + " 打平")}
+      ${btn("客胜", m.odd_away, cn(m.away) + " 胜")}
+    </div>`;
 }
 
 function escapeHtml(s) {
@@ -146,6 +161,41 @@ function render(activeKey) {
     return;
   }
   list.forEach((m) => board.appendChild(matchCard(m)));
+}
+
+// ===== 盈利计算器 =====
+function fmtMoney(n) {
+  return "¥" + n.toLocaleString("zh-CN", { maximumFractionDigits: 2 });
+}
+function updateCalc() {
+  const stake = parseFloat(document.getElementById("stake").value);
+  const odd = parseFloat(document.getElementById("odd").value);
+  const out = document.getElementById("calcResult");
+  if (!stake || !odd || stake <= 0 || odd <= 1) {
+    out.className = "calc-result";
+    out.textContent = "输入本金和倍率,自动算出能拿回多少、净赚多少";
+    return;
+  }
+  const payout = stake * odd;
+  const profit = payout - stake;
+  out.className = "calc-result ok";
+  out.innerHTML = `中了拿回 <b>${fmtMoney(payout)}</b> · 净赚 <b class="green">${fmtMoney(
+    profit
+  )}</b><br/><span class="calc-lose">没中则亏掉本金 ${fmtMoney(stake)}</span>`;
+}
+function bindCalc() {
+  document.getElementById("stake").addEventListener("input", updateCalc);
+  document.getElementById("odd").addEventListener("input", updateCalc);
+  // 事件委托:点比赛卡片里的赔率按钮,自动带入倍率
+  document.getElementById("board").addEventListener("click", (e) => {
+    const btn = e.target.closest(".odd-btn");
+    if (!btn) return;
+    document.getElementById("odd").value = btn.dataset.odd;
+    document.getElementById("calcBet").textContent = "已选:" + btn.dataset.bet + " @" + btn.dataset.odd;
+    updateCalc();
+    document.getElementById("calc").scrollIntoView({ behavior: "smooth", block: "nearest" });
+    document.getElementById("stake").focus();
+  });
 }
 
 async function init() {
@@ -193,4 +243,5 @@ async function init() {
   }
 }
 
+bindCalc();
 init();

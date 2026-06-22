@@ -14,21 +14,87 @@
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* 朋友合影做成的足球, 30% 透明放右下空白角当背景装饰 */
+/* 朋友合影做成的足球: 居中横排 3 个, 30% 透明当背景装饰 */
 .ball-bg {
   position: fixed;
-  right: -50px;
-  bottom: -50px;
-  width: clamp(200px, 38vw, 340px);
-  height: clamp(200px, 38vw, 340px);
-  background: url("assets/ball.png") center/contain no-repeat;
-  opacity: 0.3;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  gap: clamp(20px, 5vw, 60px);
   z-index: 0;
   pointer-events: none;
+  opacity: 0.3;
+}
+.ball-bg span {
+  width: clamp(110px, 22vw, 200px);
+  height: clamp(110px, 22vw, 200px);
+  background: url("assets/ball.png") center/contain no-repeat;
   filter: drop-shadow(0 6px 20px rgba(0, 0, 0, 0.4));
 }
+.ball-bg span:nth-child(2) { transform: translateY(-18px) scale(1.12); }
 /* 内容压在球上面 */
-.topbar, .date-tabs, .board, .footer { position: relative; z-index: 1; }
+.topbar, .date-tabs, .calc, .board, .footer { position: relative; z-index: 1; }
+
+/* 盈利计算器 */
+.calc {
+  max-width: 760px;
+  margin: 10px auto 0;
+  padding: 14px 16px;
+  background: linear-gradient(180deg, var(--card2), var(--card));
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+.calc-title { font-weight: 800; font-size: 16px; }
+.calc-sub { display: block; font-weight: 400; font-size: 12px; color: var(--muted); margin-top: 3px; }
+.calc-row { display: flex; gap: 12px; margin-top: 12px; }
+.calc-row label { flex: 1; font-size: 12px; color: var(--muted); display: flex; flex-direction: column; gap: 5px; }
+.calc-row input {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 11px 12px;
+  color: var(--text);
+  font-size: 16px; /* ≥16 防 iOS 自动放大 */
+  width: 100%;
+}
+.calc-row input:focus { outline: none; border-color: var(--accent); }
+.calc-bet { margin-top: 10px; font-size: 13px; color: var(--accent); min-height: 16px; }
+.calc-result {
+  margin-top: 10px;
+  padding: 12px;
+  border-radius: 10px;
+  background: var(--bg);
+  font-size: 14px;
+  color: var(--muted);
+  text-align: center;
+}
+.calc-result.ok { color: var(--text); }
+.calc-result b { font-size: 18px; }
+.calc-result .green { color: var(--win); }
+.calc-result .calc-lose { font-size: 12px; color: var(--lose); }
+
+/* 赔率按钮 */
+.odds-label { margin-top: 12px; font-size: 11px; color: var(--muted); }
+.odds-row { display: flex; gap: 8px; margin-top: 6px; }
+.odd-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 4px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  color: var(--muted);
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.odd-btn b { color: var(--accent); font-size: 15px; }
+.odd-btn:hover, .odd-btn:active { border-color: var(--accent); background: rgba(91, 140, 255, 0.12); }
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",

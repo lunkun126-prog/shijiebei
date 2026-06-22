@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="ball-bg" aria-hidden="true"></div>
+  <div class="ball-bg" aria-hidden="true"><span></span><span></span><span></span></div>
 
   <header class="topbar">
     <h1>⚽ 世界杯 2026 · 实时胜率</h1>
@@ -16,6 +16,22 @@
   </header>
 
   <nav id="dateTabs" class="date-tabs" aria-label="日期切换"></nav>
+
+  <section class="calc" id="calc">
+    <div class="calc-title">💰 盈利计算器
+      <span class="calc-sub">点下方任意赔率自动带入 · 买比分就手动填倍率</span>
+    </div>
+    <div class="calc-row">
+      <label>本金(元)
+        <input id="stake" type="number" inputmode="decimal" min="0" placeholder="输入本金,如 100" />
+      </label>
+      <label>倍率(赔率)
+        <input id="odd" type="number" inputmode="decimal" min="1" step="0.01" placeholder="点赔率自动填,或手填" />
+      </label>
+    </div>
+    <div class="calc-bet" id="calcBet"></div>
+    <div class="calc-result" id="calcResult">输入本金和倍率,自动算出能拿回多少、净赚多少</div>
+  </section>
 
   <main id="board" class="board">
     <div class="state" id="loadingState">加载中…</div>

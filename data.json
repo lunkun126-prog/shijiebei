@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-06-22T09:12:22+00:00",
+  "updated_at": "2026-06-22T09:29:38+00:00",
   "source": "the-odds-api.com (h2h, eu bookmakers, 去水位均值)",
   "count": 32,
   "matches": [
@@ -7,27 +7,36 @@
       "home": "Argentina",
       "away": "Austria",
       "kickoff_utc": "2026-06-22T17:00:00Z",
-      "p_home": 63.6,
+      "p_home": 63.7,
       "p_draw": 23.9,
-      "p_away": 12.5,
+      "p_away": 12.4,
+      "odd_home": 1.6,
+      "odd_draw": 4.28,
+      "odd_away": 7.87,
       "books_n": 25
     },
     {
       "home": "France",
       "away": "Iraq",
       "kickoff_utc": "2026-06-22T21:00:00Z",
-      "p_home": 86.3,
-      "p_draw": 10.5,
+      "p_home": 86.4,
+      "p_draw": 10.4,
       "p_away": 3.2,
+      "odd_home": 1.18,
+      "odd_draw": 11.83,
+      "odd_away": 30.93,
       "books_n": 25
     },
     {
       "home": "Norway",
       "away": "Senegal",
       "kickoff_utc": "2026-06-23T00:00:00Z",
-      "p_home": 43.0,
+      "p_home": 43.1,
       "p_draw": 29.0,
-      "p_away": 28.0,
+      "p_away": 27.9,
+      "odd_home": 2.31,
+      "odd_draw": 3.44,
+      "odd_away": 3.53,
       "books_n": 25
     },
     {
@@ -37,6 +46,9 @@
       "p_home": 15.4,
       "p_draw": 24.6,
       "p_away": 60.0,
+      "odd_home": 6.26,
+      "odd_draw": 4.13,
+      "odd_away": 1.69,
       "books_n": 25
     },
     {
@@ -46,6 +58,9 @@
       "p_home": 80.5,
       "p_draw": 13.5,
       "p_away": 6.0,
+      "odd_home": 1.19,
+      "odd_draw": 7.11,
+      "odd_away": 16.19,
       "books_n": 25
     },
     {
@@ -55,15 +70,21 @@
       "p_home": 78.8,
       "p_draw": 14.5,
       "p_away": 6.7,
+      "odd_home": 1.22,
+      "odd_draw": 6.63,
+      "odd_away": 14.5,
       "books_n": 25
     },
     {
       "home": "Panama",
       "away": "Croatia",
       "kickoff_utc": "2026-06-23T23:00:00Z",
-      "p_home": 14.1,
+      "p_home": 14.2,
       "p_draw": 23.8,
-      "p_away": 62.1,
+      "p_away": 62.0,
+      "odd_home": 6.75,
+      "odd_draw": 4.01,
+      "odd_away": 1.54,
       "books_n": 25
     },
     {
@@ -73,6 +94,9 @@
       "p_home": 63.5,
       "p_draw": 23.0,
       "p_away": 13.5,
+      "odd_home": 1.5,
+      "odd_draw": 4.15,
+      "odd_away": 7.1,
       "books_n": 23
     },
     {
@@ -82,15 +106,21 @@
       "p_home": 66.5,
       "p_draw": 19.5,
       "p_away": 14.0,
+      "odd_home": 1.44,
+      "odd_draw": 4.89,
+      "odd_away": 6.86,
       "books_n": 25
     },
     {
       "home": "Switzerland",
       "away": "Canada",
       "kickoff_utc": "2026-06-24T19:00:00Z",
-      "p_home": 39.0,
-      "p_draw": 31.3,
-      "p_away": 29.7,
+      "p_home": 39.1,
+      "p_draw": 31.1,
+      "p_away": 29.8,
+      "odd_home": 2.45,
+      "odd_draw": 3.08,
+      "odd_away": 3.22,
       "books_n": 25
     },
     {
@@ -100,6 +130,9 @@
       "p_home": 12.5,
       "p_draw": 18.5,
       "p_away": 69.0,
+      "odd_home": 7.73,
+      "odd_draw": 5.19,
+      "odd_away": 1.38,
       "books_n": 25
     },
     {
@@ -108,7 +141,10 @@
       "kickoff_utc": "2026-06-24T22:00:00Z",
       "p_home": 80.6,
       "p_draw": 13.6,
-      "p_away": 5.8,
+      "p_away": 5.9,
+      "odd_home": 1.19,
+      "odd_draw": 7.07,
+      "odd_away": 16.53,
       "books_n": 25
     },
     {
@@ -118,6 +154,9 @@
       "p_home": 26.0,
       "p_draw": 24.7,
       "p_away": 49.3,
+      "odd_home": 3.68,
+      "odd_draw": 3.87,
+      "odd_away": 1.94,
       "books_n": 25
     },
     {
@@ -127,6 +166,9 @@
       "p_home": 17.1,
       "p_draw": 24.4,
       "p_away": 58.6,
+      "odd_home": 5.61,
+      "odd_draw": 3.92,
+      "odd_away": 1.63,
       "books_n": 25
     },
     {
@@ -136,6 +178,9 @@
       "p_home": 5.0,
       "p_draw": 11.6,
       "p_away": 83.4,
+      "odd_home": 19.5,
+      "odd_draw": 8.31,
+      "odd_away": 1.15,
       "books_n": 25
     },
     {
@@ -145,6 +190,9 @@
       "p_home": 26.5,
       "p_draw": 24.7,
       "p_away": 48.9,
+      "odd_home": 3.6,
+      "odd_draw": 3.87,
+      "odd_away": 1.95,
       "books_n": 25
     },
     {
@@ -154,6 +202,9 @@
       "p_home": 49.2,
       "p_draw": 27.6,
       "p_away": 23.2,
+      "odd_home": 1.94,
+      "odd_draw": 3.46,
+      "odd_away": 4.13,
       "books_n": 25
     },
     {
@@ -163,6 +214,9 @@
       "p_home": 4.5,
       "p_draw": 10.9,
       "p_away": 84.6,
+      "odd_home": 21.61,
+      "odd_draw": 8.83,
+      "odd_away": 1.13,
       "books_n": 24
     },
     {
@@ -172,6 +226,9 @@
       "p_home": 33.3,
       "p_draw": 42.1,
       "p_away": 24.6,
+      "odd_home": 2.85,
+      "odd_draw": 2.25,
+      "odd_away": 3.86,
       "books_n": 25
     },
     {
@@ -181,6 +238,9 @@
       "p_home": 27.1,
       "p_draw": 23.4,
       "p_away": 49.5,
+      "odd_home": 3.52,
+      "odd_draw": 4.08,
+      "odd_away": 1.92,
       "books_n": 25
     },
     {
@@ -190,6 +250,9 @@
       "p_home": 21.8,
       "p_draw": 24.9,
       "p_away": 53.3,
+      "odd_home": 4.35,
+      "odd_draw": 3.82,
+      "odd_away": 1.78,
       "books_n": 22
     },
     {
@@ -199,6 +262,9 @@
       "p_home": 73.0,
       "p_draw": 17.8,
       "p_away": 9.2,
+      "odd_home": 1.3,
+      "odd_draw": 5.34,
+      "odd_away": 10.39,
       "books_n": 22
     },
     {
@@ -206,8 +272,11 @@
       "away": "Saudi Arabia",
       "kickoff_utc": "2026-06-27T00:00:00Z",
       "p_home": 40.3,
-      "p_draw": 27.0,
+      "p_draw": 27.1,
       "p_away": 32.7,
+      "odd_home": 2.37,
+      "odd_draw": 3.52,
+      "odd_away": 2.92,
       "books_n": 22
     },
     {
@@ -215,17 +284,23 @@
       "away": "Spain",
       "kickoff_utc": "2026-06-27T00:00:00Z",
       "p_home": 14.0,
-      "p_draw": 22.3,
-      "p_away": 63.7,
+      "p_draw": 22.4,
+      "p_away": 63.6,
+      "odd_home": 6.84,
+      "odd_draw": 4.25,
+      "odd_away": 1.5,
       "books_n": 22
     },
     {
       "home": "New Zealand",
       "away": "Belgium",
       "kickoff_utc": "2026-06-27T03:00:00Z",
-      "p_home": 7.2,
-      "p_draw": 14.5,
+      "p_home": 7.3,
+      "p_draw": 14.4,
       "p_away": 78.3,
+      "odd_home": 13.24,
+      "odd_draw": 6.57,
+      "odd_away": 1.21,
       "books_n": 22
     },
     {
@@ -235,6 +310,9 @@
       "p_home": 39.7,
       "p_draw": 34.6,
       "p_away": 25.7,
+      "odd_home": 2.39,
+      "odd_draw": 2.74,
+      "odd_away": 3.7,
       "books_n": 22
     },
     {
@@ -244,6 +322,9 @@
       "p_home": 58.5,
       "p_draw": 25.0,
       "p_away": 16.5,
+      "odd_home": 1.61,
+      "odd_draw": 3.78,
+      "odd_away": 5.75,
       "books_n": 21
     },
     {
@@ -253,6 +334,9 @@
       "p_home": 8.6,
       "p_draw": 14.3,
       "p_away": 77.1,
+      "odd_home": 11.16,
+      "odd_draw": 6.63,
+      "odd_away": 1.22,
       "books_n": 21
     },
     {
@@ -262,6 +346,9 @@
       "p_home": 26.3,
       "p_draw": 27.5,
       "p_away": 46.2,
+      "odd_home": 3.59,
+      "odd_draw": 3.44,
+      "odd_away": 2.04,
       "books_n": 21
     },
     {
@@ -271,6 +358,9 @@
       "p_home": 45.6,
       "p_draw": 26.4,
       "p_away": 28.0,
+      "odd_home": 2.07,
+      "odd_draw": 3.57,
+      "odd_away": 3.37,
       "books_n": 21
     },
     {
@@ -280,6 +370,9 @@
       "p_home": 31.0,
       "p_draw": 31.1,
       "p_away": 37.9,
+      "odd_home": 3.04,
+      "odd_draw": 3.03,
+      "odd_away": 2.49,
       "books_n": 21
     },
     {
@@ -289,6 +382,9 @@
       "p_home": 6.9,
       "p_draw": 13.6,
       "p_away": 79.6,
+      "odd_home": 13.92,
+      "odd_draw": 7.0,
+      "odd_away": 1.18,
       "books_n": 21
     }
   ]
