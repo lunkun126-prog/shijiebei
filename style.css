@@ -239,6 +239,9 @@
 .rec-tag.safe { background: var(--win); }
 .rec-tag.value { background: var(--draw); }
 .rec-tag.score { background: #b08bff; }
+.rec-tag.handicap { background: #5b8cff; color: #fff; }
+.rec-tag.total { background: #2dd4bf; }
+.rec-tag.parlay { background: #fb923c; }
 .rec-match { font-size: 13px; color: var(--muted); }
 .rec-pick { font-size: 15px; font-weight: 700; margin: 2px 0 8px; }
 .rec-pick b { color: var(--accent); }

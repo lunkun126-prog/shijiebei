@@ -178,6 +178,64 @@ function recCard(tag, tagCls, matchLabel, pickHtml, moneyHtml, note) {
   </div>`;
 }
 
+function favoredSide(m) {
+  return m.p_home >= m.p_away ? "home" : "away";
+}
+
+// 让球(spreads):强队让球还能赢, 倍率比直接买胜高一点
+function handicapCard(x) {
+  const m = x.m;
+  if (m.spread_point == null) return "";
+  const side = favoredSide(m);
+  const pt = Math.abs(m.spread_point);
+  if (pt === 0) return "";
+  const team = side === "home" ? cn(m.home) : cn(m.away);
+  const odd = side === "home" ? m.spread_home_odd : m.spread_away_odd;
+  if (odd == null) return "";
+  return recCard(
+    "让球",
+    "handicap",
+    `${cn(m.home)} vs ${cn(m.away)} · ${beijingTimeLabel(m.kickoff_utc)}`,
+    `买 <b>${team} 让${pt}球</b> 胜(倍率 ${odd})`,
+    moneyBox(odd),
+    `${team}先让${pt}球再算赢 → 它够强时,倍率比直接买胜更划算;但让球后赢得不够多就白搭。`
+  );
+}
+
+// 大小球(totals):稳健只在强弱悬殊时推大球
+function totalsCard(x) {
+  const m = x.m;
+  if (m.total_point == null) return "";
+  const f = x.f;
+  if (f.side !== "平局" && f.p >= 78 && m.over_odd != null) {
+    return recCard(
+      "大小球",
+      "total",
+      `${cn(m.home)} vs ${cn(m.away)} · ${beijingTimeLabel(m.kickoff_utc)}`,
+      `买 <b>大于${m.total_point}球</b>(倍率 ${m.over_odd})`,
+      moneyBox(m.over_odd),
+      `${f.side}实力碾压、大概率进球多 → 偏大球(全场≥3 球)。⚠️ 弱队摆大巴闷平是大球杀手,只在悬殊场玩。`
+    );
+  }
+  return "";
+}
+
+// 串关:稳健最多 2 串 1(两场最稳的串一起)
+function parlayCard(top) {
+  if (top.length < 2) return "";
+  const [a, b] = top;
+  const combo = +(a.f.odd * b.f.odd).toFixed(2);
+  const hitRate = Math.round((a.f.p * b.f.p) / 100);
+  return recCard(
+    "2串1·串关",
+    "parlay",
+    `${cn(a.m.home)}vs${cn(a.m.away)} ＋ ${cn(b.m.home)}vs${cn(b.m.away)}`,
+    `串 <b>${a.f.side}</b>@${a.f.odd} × <b>${b.f.side}</b>@${b.f.odd} = <b>${combo}倍</b>`,
+    moneyBox(combo),
+    `两场都猜中才算赢 → 倍率相乘更高,但中奖率也相乘(约 ${hitRate}%),比单买难。稳健<b>最多 2 串 1</b>,别串更多场。`
+  );
+}
+
 function renderRecs(matches) {
   const sec = document.getElementById("recs");
   const list = document.getElementById("recsList");
@@ -194,12 +252,13 @@ function renderRecs(matches) {
   const use = pool.length ? pool : withOdds.map((m) => ({ m, f: favOf(m) }));
   use.sort((a, b) => b.f.p - a.f.p);
 
-  const cards = [];
-  // 1) 稳胆:最被看好的一场, 买它赢(赔率低, 稳但赚得少)
   const safe = use[0];
+  const cards = [];
+
+  // 1) 胜平负·稳胆:最被看好的一场, 买它赢
   cards.push(
     recCard(
-      "稳胆",
+      "胜平负·稳胆",
       "safe",
       `${cn(safe.m.home)} vs ${cn(safe.m.away)} · ${beijingTimeLabel(safe.m.kickoff_utc)}`,
       `买 <b>${safe.f.side}</b>(胜率 ${safe.f.p}% · 倍率 ${safe.f.odd})`,
@@ -207,13 +266,13 @@ function renderRecs(matches) {
       `胜率高、倍率低 → 赢面大但赚得少。越稳的越不值钱,这就是规律。`
     )
   );
-  // 2) 价值/略博:胜率 55~72% 区间里最高的, 倍率适中
+  // 2) 胜平负·性价比:胜率 55~72% 区间, 倍率适中
   const value =
     use.find((x) => x.f.p >= 55 && x.f.p <= 72) || use[Math.min(1, use.length - 1)];
   if (value && value !== safe) {
     cards.push(
       recCard(
-        "性价比",
+        "胜平负·性价比",
         "value",
         `${cn(value.m.home)} vs ${cn(value.m.away)} · ${beijingTimeLabel(value.m.kickoff_utc)}`,
         `买 <b>${value.f.side}</b>(胜率 ${value.f.p}% · 倍率 ${value.f.odd})`,
@@ -222,20 +281,29 @@ function renderRecs(matches) {
       )
     );
   }
-  // 3) 比分(竞彩没有现成赔率, 给方向 + 让你去 App 看实际倍率填计算器)
-  const sc = safe;
-  const scLine = suggestScore(sc.m);
+  // 3) 让球:用最强那场
+  const hc = handicapCard(safe);
+  if (hc) cards.push(hc);
+  // 4) 大小球:在最悬殊的场里找(use 已按胜率降序, 取第一个 >=78% 的)
+  const lop = use.find((x) => x.f.p >= 78) || safe;
+  const tc = totalsCard(lop);
+  if (tc) cards.push(tc);
+  // 5) 比分(竞彩没有现成赔率, 给方向 + 让你去 App 看实际倍率填计算器)
+  const scLine = suggestScore(safe.m);
   cards.push(
     recCard(
       "猜比分",
       "score",
-      `${cn(sc.m.home)} vs ${cn(sc.m.away)} · ${beijingTimeLabel(sc.m.kickoff_utc)}`,
-      `猜 <b>${scLine}</b>(${sc.f.side}赢面大,最可能这个方向)`,
+      `${cn(safe.m.home)} vs ${cn(safe.m.away)} · ${beijingTimeLabel(safe.m.kickoff_utc)}`,
+      `猜 <b>${scLine}</b>(${safe.f.side}赢面大,最可能这个方向)`,
       `<span class="lose">猜中赚得多、猜错亏 ${fmtMoney(STAKE)}</span>`,
       `⚠️ 比分玩法倍率盘口里没有,本页给不了精确数。强队 2:0 在竞彩通常 <b>7~10 倍</b>(¥100 猜中约赚 ¥600~900)。
        到竞彩 App 看到真实倍率后,填进上面计算器就能算出能赚多少。比分极难中,纯属娱乐。`
     )
   );
+  // 6) 2串1:最稳的两场串一起
+  const pc = parlayCard(use.slice(0, 2));
+  if (pc) cards.push(pc);
 
   list.innerHTML = cards.join("");
   sec.hidden = false;
