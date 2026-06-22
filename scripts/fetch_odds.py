@@ -56,6 +56,7 @@ def devig_match(event: dict) -> dict | None:
     sums = {"home": 0.0, "draw": 0.0, "away": 0.0}
     odd_sums = {"home": 0.0, "draw": 0.0, "away": 0.0}  # 原始赔率(含水位)累加, 用于展示倍率
     books_n = 0
+    pin_p = None  # Pinnacle(sharp 庄)单独去水位概率, 作为更准的公平基准
 
     for bm in event.get("bookmakers", []):
         market = next((m for m in bm.get("markets", []) if m.get("key") == "h2h"), None)
@@ -77,15 +78,24 @@ def devig_match(event: dict) -> dict | None:
             continue  # 三项不齐这家跳过
         imp = {k: 1.0 / v for k, v in prices.items()}
         total = sum(imp.values())  # >1, 多出来的就是水位
+        devig = {k: imp[k] / total for k in imp}  # 这家去水位后的概率
         for k in sums:
-            sums[k] += imp[k] / total  # 去水位后的概率
+            sums[k] += devig[k]
             odd_sums[k] += prices[k]   # 原始赔率(玩家实际看到的倍率)
         books_n += 1
+        if bm.get("key") == "pinnacle":
+            pin_p = devig  # sharp 庄基准, 优先用它
 
     if books_n == 0:
         return None
 
-    p = {k: sums[k] / books_n for k in sums}
+    # 公平概率: 有 Pinnacle 用它(软庄会被公众资金带偏, 均值不够准), 否则退回全体平均
+    if pin_p:
+        p = dict(pin_p)
+        fair_src = "pinnacle"
+    else:
+        p = {k: sums[k] / books_n for k in sums}
+        fair_src = "avg"
     # 防浮点误差, 归一到 1
     s = sum(p.values())
     p = {k: v / s for k, v in p.items()}
@@ -94,6 +104,7 @@ def devig_match(event: dict) -> dict | None:
         "home": home,
         "away": away,
         "kickoff_utc": event.get("commence_time"),
+        "fair_src": fair_src,  # 公平基准来源: pinnacle(sharp) / avg(全体平均)
         "p_home": round(p["home"] * 100, 1),
         "p_draw": round(p["draw"] * 100, 1),
         "p_away": round(p["away"] * 100, 1),

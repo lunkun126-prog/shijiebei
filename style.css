@@ -30,6 +30,8 @@
   --win:  var(--green);   /* 主队胜 */
   --draw: var(--orange);  /* 平(浅底上黄字看不清,用橙) */
   --lose: var(--red);     /* 客队胜 */
+  /* C4 中性灰蓝:胜率条/卡片不再用红绿橙暗示胜负,绿色只留给"有价值" */
+  --slate: 90, 105, 138;  /* rgb 分量, 概率条按深浅叠 alpha 用 */
 
   /* ===== 文字层级(瞻海) ===== */
   --text:  #1d1d1f;
@@ -497,13 +499,29 @@ body.calc-open .calc-backdrop { opacity: 1; pointer-events: auto; }
               transform var(--t-fast) var(--ease);
 }
 .odd-btn .ob-lbl { font-size: 11px; color: var(--muted); }
-.odd-btn b { color: var(--accent); font-size: 15px; font-weight: 700; line-height: 1.1; }
-.odd-btn .ob-jc { font-style: normal; font-size: 9.5px; color: var(--muted2); }
+.odd-btn b { color: var(--accent); font-size: 15px; font-weight: 700; line-height: 1.1; display: inline-flex; align-items: baseline; gap: 2px; }
+.odd-btn b .ob-tag { font-size: 8.5px; font-weight: 700; color: var(--muted2); }
 .odd-btn .ob-be { font-style: normal; font-size: 10px; font-weight: 600; margin-top: 1px; }
 .odd-btn.ob-bad  .ob-be { color: var(--lose); }   /* 回本线比市场胜率还高=长期亏 */
 .odd-btn.ob-good .ob-be { color: var(--win); }
+/* 价值标记:正=绿,负(水位)=灰 */
+.odd-btn .ob-val { font-style: normal; font-size: 9.5px; font-weight: 700; margin-top: 2px; padding: 1px 5px; border-radius: var(--r-pill); color: var(--muted); background: rgba(0,0,0,0.05); }
+.odd-btn .ob-val.good { color: #0a7d2c; background: rgba(52,199,89,0.16); }
+.odd-btn.ob-value { border-color: rgba(52,199,89,0.5); background: rgba(52,199,89,0.06); }
 .odd-btn:hover { border-color: var(--accent); background: rgba(0,113,227,0.10); transform: translateY(-1px); }
 .odd-btn:active { transform: scale(0.97); }
+/* 竞彩录入面板 (#luru) */
+.admin { background: var(--card-strong); border: 0.5px solid var(--hair2); border-radius: var(--r-card); padding: 18px; box-shadow: var(--shadow-2), var(--glass-hi); }
+.admin h2 { font-size: 17px; margin-bottom: 6px; }
+.admin p { font-size: 12px; color: var(--text2); line-height: 1.6; margin-bottom: 12px; }
+.admin code { background: rgba(0,0,0,0.06); padding: 1px 5px; border-radius: 5px; font-size: 11px; }
+.admin-tbl { width: 100%; border-collapse: collapse; font-size: 12px; }
+.admin-tbl th { text-align: left; padding: 6px 6px; color: var(--muted); font-weight: 600; border-bottom: 0.5px solid var(--hair); }
+.admin-tbl td { padding: 6px 6px; border-bottom: 0.5px solid var(--hair); vertical-align: middle; }
+.admin-tbl input { width: 72px; padding: 6px 8px; border: 0.5px solid var(--hair2); border-radius: 8px; font-size: 13px; font-family: var(--font); }
+.jc-gen { margin-top: 14px; padding: 9px 18px; background: var(--accent); color: #fff; border: none; border-radius: var(--r-btn); font-size: 13px; font-weight: 600; cursor: pointer; }
+.jc-gen:active { transform: scale(0.97); }
+.jc-out { width: 100%; min-height: 140px; margin-top: 12px; padding: 10px; border: 0.5px solid var(--hair2); border-radius: var(--r-btn); font-family: ui-monospace, "SF Mono", Consolas, monospace; font-size: 11px; resize: vertical; }
 .odds-foot { margin-top: 8px; font-size: 10.5px; color: var(--muted); line-height: 1.55; }
 .odds-foot b { color: var(--text2); }
 
@@ -670,10 +688,33 @@ body.calc-open .calc-backdrop { opacity: 1; pointer-events: auto; }
   transition: box-shadow var(--t) var(--ease), transform var(--t) var(--ease);
 }
 .match-card:hover { box-shadow: var(--shadow-3), var(--glass-hi); transform: translateY(-2px); }
-/* 左侧色条按最被看好的结果上色 + 同色淡底 */
-.match-card.fav-home { border-left-color: var(--green);  background: linear-gradient(180deg, rgba(52,199,89,0.10), rgba(52,199,89,0.02)), var(--card-strong); }
-.match-card.fav-draw { border-left-color: var(--orange); background: linear-gradient(180deg, rgba(255,149,0,0.10), rgba(255,149,0,0.02)), var(--card-strong); }
-.match-card.fav-away { border-left-color: var(--lose);   background: linear-gradient(180deg, rgba(255,59,48,0.09), rgba(255,59,48,0.02)), var(--card-strong); }
+/* C4:默认中性灰边,不再用红绿暗示谁赢;C7:只有"含有价值注"的卡片才给绿边+角标 */
+.match-card.has-value { border-left-color: var(--green); background: linear-gradient(180deg, rgba(52,199,89,0.07), rgba(52,199,89,0.01)), var(--card-strong); }
+.value-flag {
+  display: inline-block;
+  margin-bottom: 10px;
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #0a7d2c;
+  background: rgba(52,199,89,0.16);
+  border: 0.5px solid rgba(52,199,89,0.4);
+  border-radius: var(--r-pill);
+  letter-spacing: -0.005em;
+}
+/* 价值扫描日条 */
+.val-banner {
+  margin-bottom: 14px;
+  padding: 11px 14px;
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--text2);
+  background: var(--card);
+  border: 0.5px solid var(--hair2);
+  border-radius: var(--r-btn);
+  box-shadow: var(--shadow-1), var(--glass-hi);
+}
+.val-banner b { color: #0a7d2c; font-weight: 800; }
 .match-head {
   display: flex;
   justify-content: space-between;
@@ -711,35 +752,32 @@ body.calc-open .calc-backdrop { opacity: 1; pointer-events: auto; }
   border: 0.5px solid var(--hair);
   box-shadow: inset 0 1px 3px rgba(0,0,0,0.25);
 }
+/* C4:三段同一灰蓝,深浅(alpha)随该结果概率,只用条宽+深浅表达,不再红绿暗示胜负 */
 .seg {
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 12px;
   font-weight: 700;
-  color: #06101f;
+  color: #fff;
   min-width: 0;
   transition: flex-basis 0.5s var(--ease);
   white-space: nowrap;
   overflow: hidden;
   font-feature-settings: "tnum" 1;
-  background-image: linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0) 60%);
+  background-color: rgba(var(--slate), var(--depth, 0.6));
+  box-shadow: inset -0.5px 0 0 rgba(255,255,255,0.35);  /* 段间细分隔 */
+  background-image: linear-gradient(180deg, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0) 60%);
+  text-shadow: 0 1px 1px rgba(0,0,0,0.25);
 }
-.seg.win  { background-color: var(--win); }
-.seg.draw { background-color: var(--draw); }
-.seg.lose { background-color: var(--lose); }
 .prob-legend {
   display: flex;
-  justify-content: space-between;
-  margin-top: 9px;
-  font-size: 12px;
+  justify-content: center;
+  margin-top: 8px;
+  font-size: 11px;
   color: var(--muted);
+  letter-spacing: -0.002em;
 }
-.prob-legend .lg { display: flex; align-items: center; gap: 5px; }
-.dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
-.dot.win  { background: var(--win); }
-.dot.draw { background: var(--draw); }
-.dot.lose { background: var(--lose); }
 .favored { color: var(--text); font-weight: 700; }
 
 /* 状态 / 空态 */

@@ -101,34 +101,61 @@ function honestLine(m) {
   return `市场看好 <b>${escapeHtml(f.side)} ${f.p}%</b>,倍率 ${f.odd}${verdict}。竞彩实开更低,回本更难。`;
 }
 
+// ===== 竞彩手填赔率(C5)+ 价值扫描(C7)=====
+// 竞彩单场固定奖金、赔率公布后不变, 每天仅 4–6 场, 手填完全可行。
+// 数据来自仓库里的 jingcai.json(键 = 北京日期|主队英文|客队英文), 站长日更一次提交,
+// 朋友刷新即可看到。打开 页面#luru 有录入面板自动生成这段 JSON。
+let JINGCAI = {};
+const VALUE_THRESHOLD = 0.03; // 价值% ≥ +3% 才标"有价值", 留安全垫避免噪声
+
+function jcKey(m) {
+  return `${beijingDateKey(m.kickoff_utc)}|${m.home}|${m.away}`;
+}
+function jcOf(m) {
+  return JINGCAI[jcKey(m)] || null;
+}
+
+// 单个结果的价值:公平概率(Pinnacle 去水位)× 你实际能拿到的赔率 − 1
+// 实际赔率优先用竞彩(你真去买的), 没填则退回国际盘均值
+function valueOf(p, marketOdd, jcOdd) {
+  const jc = jcOdd != null && jcOdd > 1 ? jcOdd : null;
+  const betOdd = jc != null ? jc : marketOdd;
+  const fairOdd = +(100 / p).toFixed(2);          // 公平赔率 = 1/公平概率
+  const value = +((p / 100) * betOdd - 1).toFixed(3); // EV 比例(>0 才理论占便宜)
+  return { betOdd, jc, fairOdd, value, isValue: value >= VALUE_THRESHOLD };
+}
+// 一场比赛三个结果里有没有"有价值"的(用于卡片绿边/角标)
+function cardHasValue(m) {
+  if (m.odd_home == null) return false;
+  const jc = jcOf(m);
+  return (
+    valueOf(m.p_home, m.odd_home, jc && jc.home).isValue ||
+    valueOf(m.p_draw, m.odd_draw, jc && jc.draw).isValue ||
+    valueOf(m.p_away, m.odd_away, jc && jc.away).isValue
+  );
+}
+
 function matchCard(m) {
   const card = document.createElement("div");
-  // 左侧色条按"最被看好的结果"上色:主胜绿 / 平局橙 / 客胜红
-  const favCls =
-    m.p_home >= m.p_draw && m.p_home >= m.p_away ? "fav-home"
-    : m.p_away >= m.p_draw && m.p_away >= m.p_home ? "fav-away"
-    : "fav-draw";
-  card.className = "match-card " + favCls;
+  const hasValue = cardHasValue(m);
+  card.className = "match-card" + (hasValue ? " has-value" : "");
+  // C4:三段同一灰蓝, 深浅(alpha)随概率, 不再用红绿暗示胜负
+  const seg = (p) =>
+    `<div class="seg" style="flex-basis:${p}%;--depth:${(0.3 + 0.6 * p / 100).toFixed(3)}">${p}%</div>`;
+  const fairBadge = m.fair_src === "pinnacle" ? "Pinnacle基准" : "均值基准";
   card.innerHTML = `
     <div class="match-head">
       <span class="kickoff">🕐 ${beijingTimeLabel(m.kickoff_utc)} 北京时间</span>
-      <span class="books">${m.books_n} 家盘口</span>
+      <span class="books">${fairBadge} · ${m.books_n}家</span>
     </div>
+    ${hasValue ? `<span class="value-flag">✓ 有价值注</span>` : ""}
     <div class="teams">
       <span class="team home">${escapeHtml(cn(m.home))}</span>
       <span class="vs">VS</span>
       <span class="team away">${escapeHtml(cn(m.away))}</span>
     </div>
-    <div class="prob-bar">
-      <div class="seg win" style="flex-basis:${m.p_home}%">${m.p_home}%</div>
-      <div class="seg draw" style="flex-basis:${m.p_draw}%">${m.p_draw}%</div>
-      <div class="seg lose" style="flex-basis:${m.p_away}%">${m.p_away}%</div>
-    </div>
-    <div class="prob-legend">
-      <span class="lg"><span class="dot win"></span>主胜</span>
-      <span class="lg"><span class="dot draw"></span>平局</span>
-      <span class="lg"><span class="dot lose"></span>客胜</span>
-    </div>
+    <div class="prob-bar">${seg(m.p_home)}${seg(m.p_draw)}${seg(m.p_away)}</div>
+    <div class="prob-legend">条宽=市场胜率(左 主胜 · 中 平 · 右 客胜)· 颜色不分胜负</div>
     <div class="honest">📊 ${honestLine(m)}</div>
     ${oddsRow(m)}
   `;
@@ -139,32 +166,38 @@ function matchCard(m) {
 function breakeven(odd) {
   return +(100 / odd).toFixed(1);
 }
-// 竞彩实开估算:国内竞彩整体返还率比国际盘低,粗估 ×0.92(仅量级参考,以竞彩 App 实际为准)
-function jingcaiEst(odd) {
-  return +(odd * 0.92).toFixed(2);
-}
 
 function oddsRow(m) {
   if (m.odd_home == null) return ""; // 旧数据无倍率时不显示
-  // 每个赔率带:国际赔率 / 竞彩估 / 回本%。回本%比该结果市场胜率还高就标红(长期亏)
-  const btn = (lbl, odd, bet, p) => {
-    const be = breakeven(odd);
-    const bad = be > p; // 注定亏
-    return `<button class="odd-btn ${bad ? "ob-bad" : "ob-good"}" data-odd="${odd}" data-p="${p}" data-bet="${escapeHtml(bet)}" title="点我试算这一注能赚多少">
+  const jc = jcOf(m);
+  // 每个赔率带:实开倍率(竞彩优先/标"竞", 没填用国际盘/标"盘") + 回本% + 价值%
+  const btn = (lbl, marketOdd, jcOdd, bet, p) => {
+    const v = valueOf(p, marketOdd, jcOdd);
+    const be = breakeven(v.betOdd);
+    const bad = be > p; // 回本线比胜率还高 = 长期亏
+    const tag = v.jc != null ? "竞" : "盘";
+    const pct = Math.round(v.value * 100);
+    const valBadge = v.isValue
+      ? `<i class="ob-val good">价值+${pct}%</i>`
+      : `<i class="ob-val">水位${pct}%</i>`;
+    return `<button class="odd-btn ${bad ? "ob-bad" : "ob-good"} ${v.isValue ? "ob-value" : ""}" data-odd="${v.betOdd}" data-p="${p}" data-bet="${escapeHtml(bet)}" title="公平赔率约 ${v.fairOdd} · 点我试算这一注能赚多少">
        <span class="ob-lbl">${lbl}</span>
-       <b>${odd}</b>
-       <em class="ob-jc">竞彩≈${jingcaiEst(odd)}</em>
+       <b>${v.betOdd}<span class="ob-tag">${tag}</span></b>
        <i class="ob-be">回本${be}%</i>
+       ${valBadge}
      </button>`;
   };
+  const foot = jc
+    ? `上排已填<b>竞彩</b>实开(标"竞")。`
+    : `<b>竞彩未填</b>,暂用<b>国际盘</b>均值(标"盘",竞彩实际更低)。`;
   return `
-    <div class="odds-label">💡 点任意赔率自动试算 · <span class="ob-legend">回本%=要赢多少才不亏</span></div>
+    <div class="odds-label">💡 点任意赔率自动试算 · <span class="ob-legend">竞=竞彩 盘=国际盘 · 绿=有价值(+EV)</span></div>
     <div class="odds-row">
-      ${btn("主胜", m.odd_home, cn(m.home) + " 胜", m.p_home)}
-      ${btn("平局", m.odd_draw, cn(m.home) + " vs " + cn(m.away) + " 打平", m.p_draw)}
-      ${btn("客胜", m.odd_away, cn(m.away) + " 胜", m.p_away)}
+      ${btn("主胜", m.odd_home, jc && jc.home, cn(m.home) + " 胜", m.p_home)}
+      ${btn("平局", m.odd_draw, jc && jc.draw, cn(m.home) + " vs " + cn(m.away) + " 打平", m.p_draw)}
+      ${btn("客胜", m.odd_away, jc && jc.away, cn(m.away) + " 胜", m.p_away)}
     </div>
-    <div class="odds-foot">上排是<b>国际盘</b>实开,<b>竞彩≈</b>是国内竞彩估开(更低)。把上面<b>市场胜率</b>和这里<b>回本%</b>对一下:回本%还更高,差的几个点就是长期注定要交的水。</div>`;
+    <div class="odds-foot">${foot}<b>价值% = 公平胜率 × 你能拿到的赔率 − 1</b>:正的(≥+3%标绿)才理论占便宜,负的就是要交的水位。回本% 比市场胜率还高也是长期亏。</div>`;
 }
 
 function escapeHtml(s) {
@@ -363,7 +396,71 @@ function render(activeKey) {
     board.innerHTML = `<div class="state">这一天暂无世界杯比赛 🌙</div>`;
     return;
   }
+  // C7:价值扫描日条 —— 数这一天有几注理论有价值
+  let valCount = 0;
+  list.forEach((m) => {
+    if (m.odd_home == null) return;
+    const jc = jcOf(m);
+    [
+      [m.p_home, m.odd_home, jc && jc.home],
+      [m.p_draw, m.odd_draw, jc && jc.draw],
+      [m.p_away, m.odd_away, jc && jc.away],
+    ].forEach(([p, mo, jo]) => {
+      if (valueOf(p, mo, jo).isValue) valCount++;
+    });
+  });
+  const banner = document.createElement("div");
+  banner.className = "val-banner";
+  banner.innerHTML = valCount
+    ? `🔎 价值扫描:这一天 ${list.length} 场里发现 <b>${valCount}</b> 注理论有价值(公平胜率 × 可下注赔率 ≥ +3%),已用<b>绿色</b>标出。仍非稳赢,只是长期占一点便宜。`
+    : `🔎 价值扫描:这一天 ${list.length} 场<b>没扫到</b>有价值的注 —— 这很正常,绝大多数注长期都是负期望(在交水位)。`;
+  board.appendChild(banner);
   list.forEach((m) => board.appendChild(matchCard(m)));
+}
+
+// ===== 竞彩录入面板(打开 页面#luru 出现, 站长用)=====
+function maybeRenderAdmin(matches) {
+  if (location.hash !== "#luru") return false;
+  const board = document.getElementById("board");
+  const tabs = document.getElementById("dateTabs");
+  if (tabs) tabs.innerHTML = "";
+  const rows = matches
+    .slice()
+    .sort((a, b) => (a.kickoff_utc < b.kickoff_utc ? -1 : 1))
+    .map((m) => {
+      const k = jcKey(m);
+      const jc = JINGCAI[k] || {};
+      return `<tr data-k="${escapeHtml(k)}">
+        <td>${beijingDateKey(m.kickoff_utc).slice(5)} ${beijingTimeLabel(m.kickoff_utc)}<br>${escapeHtml(cn(m.home))} vs ${escapeHtml(cn(m.away))}</td>
+        <td><input type="number" step="0.01" min="1" class="jc-h" value="${jc.home ?? ""}" placeholder="盘${m.odd_home ?? "-"}"></td>
+        <td><input type="number" step="0.01" min="1" class="jc-d" value="${jc.draw ?? ""}" placeholder="盘${m.odd_draw ?? "-"}"></td>
+        <td><input type="number" step="0.01" min="1" class="jc-a" value="${jc.away ?? ""}" placeholder="盘${m.odd_away ?? "-"}"></td>
+      </tr>`;
+    })
+    .join("");
+  board.innerHTML = `<div class="admin">
+    <h2>🎯 竞彩赔率录入</h2>
+    <p>对照竞彩 App 把每场<b>实际赔率</b>填进去(主/平/客),灰色占位是国际盘参考。填好点下面按钮生成 JSON,整段复制覆盖到仓库 <code>jingcai.json</code> 提交即可 —— 朋友刷新就能看到真实竞彩价值。留空=该项不显示竞彩、回退国际盘。</p>
+    <table class="admin-tbl"><thead><tr><th>比赛(北京时间)</th><th>主胜</th><th>平</th><th>客胜</th></tr></thead><tbody>${rows}</tbody></table>
+    <button id="jcGen" class="jc-gen">生成 jingcai.json</button>
+    <textarea id="jcOut" class="jc-out" readonly placeholder="点上面按钮,这里出现要提交的内容…"></textarea>
+  </div>`;
+  document.getElementById("jcGen").addEventListener("click", () => {
+    const obj = {};
+    board.querySelectorAll("tr[data-k]").forEach((tr) => {
+      const k = tr.getAttribute("data-k");
+      const e = {};
+      const h = parseFloat(tr.querySelector(".jc-h").value);
+      const d = parseFloat(tr.querySelector(".jc-d").value);
+      const a = parseFloat(tr.querySelector(".jc-a").value);
+      if (h > 1) e.home = h;
+      if (d > 1) e.draw = d;
+      if (a > 1) e.away = a;
+      if (Object.keys(e).length) obj[k] = e;
+    });
+    document.getElementById("jcOut").value = JSON.stringify(obj, null, 2);
+  });
+  return true;
 }
 
 // ===== 盈利计算器 =====
@@ -494,6 +591,15 @@ async function init() {
       return;
     }
 
+    // 竞彩手填赔率(可选;没有 jingcai.json 也不报错, 回退国际盘)
+    try {
+      const jr = await fetch("jingcai.json?t=" + Date.now());
+      if (jr.ok) JINGCAI = await jr.json();
+    } catch (e) { /* 没填就算了 */ }
+
+    // 录入模式:打开 #luru 直接出录入面板, 不渲染看板
+    if (maybeRenderAdmin(matches)) return;
+
     renderRecs(matches);
 
     GROUPED = {};
@@ -519,3 +625,5 @@ async function init() {
 bindCalc();
 init();
 showFirstVisitBubble();
+// 站长录入面板:#luru 进出时重渲染
+window.addEventListener("hashchange", () => init());
