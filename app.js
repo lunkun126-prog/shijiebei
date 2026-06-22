@@ -127,10 +127,10 @@ function matchCard(m) {
 function oddsRow(m) {
   if (m.odd_home == null) return ""; // 旧数据无倍率时不显示
   const btn = (lbl, odd, bet) =>
-    `<button class="odd-btn" data-odd="${odd}" data-bet="${escapeHtml(bet)}">
+    `<button class="odd-btn" data-odd="${odd}" data-bet="${escapeHtml(bet)}" title="点我试算这一注能赚多少">
        <span>${lbl}</span><b>${odd}</b></button>`;
   return `
-    <div class="odds-label">赔率(点一下带进计算器):</div>
+    <div class="odds-label">💡 点任意赔率,自动带进计算器试算:</div>
     <div class="odds-row">
       ${btn("主胜", m.odd_home, cn(m.home) + " 胜")}
       ${btn("平局", m.odd_draw, cn(m.home) + " vs " + cn(m.away) + " 打平")}
@@ -347,7 +347,7 @@ function updateCalc() {
   const out = document.getElementById("calcResult");
   if (!stake || !odd || stake <= 0 || odd <= 1) {
     out.className = "calc-result";
-    out.textContent = "输入本金和倍率,自动算出能拿回多少、净赚多少";
+    out.textContent = "👆 点下面任意赔率,自动帮你算这一注能赚多少";
     return;
   }
   const payout = stake * odd;
@@ -357,9 +357,34 @@ function updateCalc() {
     profit
   )}</b><br/><span class="calc-lose">没中则亏掉本金 ${fmtMoney(stake)}</span>`;
 }
+// 窄屏(<1320px)=抽屉形态;宽屏=右侧常驻侧栏
+function isSheetMode() {
+  return window.matchMedia("(max-width: 1319px)").matches;
+}
+function openCalc() {
+  document.body.classList.add("calc-open");
+}
+function closeCalc() {
+  document.body.classList.remove("calc-open");
+}
+
 function bindCalc() {
   document.getElementById("stake").addEventListener("input", updateCalc);
   document.getElementById("odd").addEventListener("input", updateCalc);
+
+  // 悬浮按钮 / 关闭 / 遮罩 / Esc
+  const fab = document.getElementById("calcFab");
+  const closeBtn = document.getElementById("calcClose");
+  const backdrop = document.getElementById("calcBackdrop");
+  if (fab) fab.addEventListener("click", () => {
+    openCalc();
+    dismissBubble();
+    document.getElementById("stake").focus();
+  });
+  if (closeBtn) closeBtn.addEventListener("click", closeCalc);
+  if (backdrop) backdrop.addEventListener("click", closeCalc);
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeCalc(); });
+
   // 事件委托:点比赛卡片里的赔率按钮,自动带入倍率
   document.getElementById("board").addEventListener("click", (e) => {
     const btn = e.target.closest(".odd-btn");
@@ -367,9 +392,34 @@ function bindCalc() {
     document.getElementById("odd").value = btn.dataset.odd;
     document.getElementById("calcBet").textContent = "已选:" + btn.dataset.bet + " @" + btn.dataset.odd;
     updateCalc();
-    document.getElementById("calc").scrollIntoView({ behavior: "smooth", block: "nearest" });
+    dismissBubble();
+    if (isSheetMode()) {
+      openCalc(); // 手机:从底部弹出抽屉
+    } else {
+      document.getElementById("calc").scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
     document.getElementById("stake").focus();
   });
+}
+
+// ===== 首次访问引导气泡(localStorage 只提示一次)=====
+function dismissBubble() {
+  const b = document.getElementById("calcBubble");
+  if (b) b.remove();
+  try { localStorage.setItem("wc_calc_hint", "1"); } catch (e) {}
+}
+function showFirstVisitBubble() {
+  try { if (localStorage.getItem("wc_calc_hint")) return; } catch (e) { return; }
+  const sheet = window.matchMedia("(max-width: 1319px)").matches;
+  const b = document.createElement("div");
+  b.id = "calcBubble";
+  b.className = "calc-bubble " + (sheet ? "m" : "d");
+  b.innerHTML = sheet
+    ? `💰 想知道这场能赚多少?<br/>点右下角 <b>试算</b> 按钮,或直接点任意赔率自动算。<span class="bub-close">知道了</span>`
+    : `💰 右边是<b>盈利计算器</b> →<br/>点任意比赛的赔率,自动算你这一注能赚多少。<span class="bub-close">知道了</span>`;
+  document.body.appendChild(b);
+  b.querySelector(".bub-close").addEventListener("click", dismissBubble);
+  setTimeout(() => { const x = document.getElementById("calcBubble"); if (x) x.remove(); }, 13000);
 }
 
 async function init() {
@@ -421,3 +471,4 @@ async function init() {
 
 bindCalc();
 init();
+showFirstVisitBubble();
