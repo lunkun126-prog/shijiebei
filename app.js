@@ -306,12 +306,12 @@ function renderRecs(matches) {
   if (value && value !== safe) {
     cards.push(
       recCard(
-        "胜平负·性价比",
+        "中胜率·中回报",
         "value",
         `${cn(value.m.home)} vs ${cn(value.m.away)} · ${beijingTimeLabel(value.m.kickoff_utc)}`,
-        `买 <b>${value.f.side}</b>(胜率 ${value.f.p}% · 倍率 ${value.f.odd})`,
+        `若买 <b>${value.f.side}</b>(市场胜率 ${value.f.p}% · 倍率 ${value.f.odd} · 回本 ${breakeven(value.f.odd)}%)`,
         moneyBox(value.f.odd),
-        `胜率倍率较平衡,风险回报折中。`
+        `胜率倍率较平衡;回本线仍贴着胜率,长期期望多为负,娱乐看待。`
       )
     );
   }
