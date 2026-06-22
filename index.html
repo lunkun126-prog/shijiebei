@@ -8,7 +8,32 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="ball-bg" aria-hidden="true"><span></span><span></span><span></span></div>
+  <!-- 背景:足球绕轨道公转(致敬"多维"天体运行) -->
+  <div class="space" aria-hidden="true">
+    <div class="glow"></div>
+    <div class="disc">
+      <div class="ring" style="--d:28vmin"></div>
+      <div class="ring" style="--d:46vmin"></div>
+      <div class="ring" style="--d:64vmin"></div>
+      <div class="ring" style="--d:84vmin"></div>
+      <div class="arm" style="--d:28vmin;--t:17s;animation-delay:-3s">
+        <div class="orbwrap"><span class="orb" style="font-size:20px">⚽</span></div></div>
+      <div class="arm" style="--d:46vmin;--t:24s;animation-delay:-11s">
+        <div class="orbwrap"><span class="orb" style="font-size:26px">⚽</span></div></div>
+      <div class="arm" style="--d:64vmin;--t:33s;animation-delay:-7s">
+        <div class="orbwrap"><span class="orb" style="font-size:22px">⚽</span></div></div>
+      <div class="arm" style="--d:84vmin;--t:44s;animation-delay:-20s">
+        <div class="orbwrap"><span class="orb" style="font-size:30px">⚽</span></div></div>
+    </div>
+  </div>
+
+  <!-- 朋友合影做成的足球:放在内容两侧空白处, 垂直居中 -->
+  <div class="side-ball left" aria-hidden="true">
+    <img src="assets/ball.png" alt="" /><span>徐总发发发</span>
+  </div>
+  <div class="side-ball right" aria-hidden="true">
+    <img src="assets/ball.png" alt="" /><span>徐总发发发</span>
+  </div>
 
   <header class="topbar">
     <h1>⚽ 世界杯 2026 · 实时胜率</h1>

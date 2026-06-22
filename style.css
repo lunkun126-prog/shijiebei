@@ -14,26 +14,109 @@
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* 朋友合影做成的足球: 居中横排 3 个, 30% 透明当背景装饰 */
-.ball-bg {
+/* ===== 背景:足球绕轨道公转(致敬"多维"天体运行轨迹)===== */
+.space {
   position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+/* 中心辉光(像太阳) */
+.glow {
+  position: absolute;
   top: 50%;
   left: 50%;
+  width: 22vmin;
+  height: 22vmin;
   transform: translate(-50%, -50%);
-  display: flex;
-  gap: clamp(20px, 5vw, 60px);
-  z-index: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(120,170,255,0.35) 0%, rgba(91,140,255,0.12) 40%, transparent 70%);
+  filter: blur(4px);
+}
+/* 黄道盘:整体压扁+微倾,让正圆轨道呈倾斜椭圆 */
+.disc {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-8deg) scaleY(0.55);
+}
+/* 轨道迹线(很淡) */
+.ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--d);
+  height: var(--d);
+  margin: calc(var(--d) / -2) 0 0 calc(var(--d) / -2);
+  border: 1px dashed rgba(120, 170, 255, 0.16);
+  border-radius: 50%;
+}
+/* 公转臂:带着足球绕中心转 */
+.arm {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--d);
+  height: var(--d);
+  margin: calc(var(--d) / -2) 0 0 calc(var(--d) / -2);
+  animation: orbit-spin var(--t) linear infinite;
+}
+.orbwrap {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  /* 反向自转,抵消公转臂的旋转,让球始终正着 */
+  animation: orbit-spin var(--t) linear infinite reverse;
+  animation-delay: inherit;
+}
+.orb {
+  display: block;
+  /* 抵消 disc 的压扁与微倾,让足球保持正圆 */
+  transform: scaleY(1.82) rotate(8deg);
+  filter: drop-shadow(0 3px 10px rgba(0, 0, 0, 0.5));
+  opacity: 0.85;
+}
+@keyframes orbit-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .arm, .orbwrap { animation: none; }
+}
+
+/* ===== 两侧空白处的"合影足球" ===== */
+.side-ball {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  width: clamp(120px, 15vw, 200px);
+  z-index: 2;
+  text-align: center;
   pointer-events: none;
-  opacity: 0.3;
 }
-.ball-bg span {
-  width: clamp(110px, 22vw, 200px);
-  height: clamp(110px, 22vw, 200px);
-  background: url("assets/ball.png") center/contain no-repeat;
-  filter: drop-shadow(0 6px 20px rgba(0, 0, 0, 0.4));
+.side-ball.left  { left: max(10px, calc(50% - 380px - 13vw)); }
+.side-ball.right { right: max(10px, calc(50% - 380px - 13vw)); }
+.side-ball img {
+  width: 100%;
+  filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.45));
 }
-.ball-bg span:nth-child(2) { transform: translateY(-18px) scale(1.12); }
-/* 内容压在球上面 */
+.side-ball span {
+  display: block;
+  margin-top: 8px;
+  font-weight: 800;
+  font-size: clamp(14px, 1.4vw, 20px);
+  letter-spacing: 2px;
+  color: #ffd45e;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7), 0 0 4px rgba(255, 180, 40, 0.4);
+}
+/* 窗口太窄(没有侧边空白)就藏起来,免得压住内容 */
+@media (max-width: 1180px) {
+  .side-ball { display: none; }
+}
+
+/* 内容压在背景球上面 */
 .topbar, .date-tabs, .calc, .board, .footer { position: relative; z-index: 1; }
 
 /* 盈利计算器 */
