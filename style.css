@@ -5,48 +5,48 @@
    适配本页既有的"天体运行"深色星空背景。
    ============================================ */
 :root {
-  /* ===== 夜间画布灰阶 ===== */
-  --bg:    #0a0e1a;            /* 主背景:深空近黑蓝 */
-  --bg2:   #11172a;
-  /* 卡片=半透明 + 毛玻璃,透出后面的星轨 */
-  --card:        rgba(28, 36, 58, 0.62);
-  --card-strong: rgba(32, 41, 66, 0.78);
-  --card-solid:  #1a2236;
+  /* ===== 浅色画布灰阶(瞻海 v3.1) ===== */
+  --bg:    #e8e8ed;            /* 主背景:有明显灰度的浅灰 */
+  --bg2:   #ededf2;
+  /* 卡片=半透明白 + 毛玻璃,透出后面的星轨 */
+  --card:        rgba(255, 255, 255, 0.78);
+  --card-strong: rgba(255, 255, 255, 0.92);
+  --card-solid:  #ffffff;
 
-  /* ===== Apple 暗色系统色板(瞻海 SF Symbols 的夜间对应值) ===== */
-  --blue:   #0a84ff;
-  --green:  #30d158;
-  --red:    #ff453a;
-  --orange: #ff9f0a;
-  --yellow: #ffd60a;
-  --purple: #bf5af2;
-  --teal:   #64d2ff;
-  --pink:   #ff375f;
+  /* ===== Apple 浅色系统色板(瞻海 SF Symbols) ===== */
+  --blue:   #0071e3;
+  --green:  #34c759;
+  --red:    #ff3b30;
+  --orange: #ff9500;
+  --yellow: #ffcc00;
+  --purple: #af52de;
+  --teal:   #5ac8fa;
+  --pink:   #ff2d55;
 
   --accent:       var(--blue);
-  --accent-hover: #3a9bff;
+  --accent-hover: #0077ed;
 
   /* 语义色(沿用页面原含义) */
   --win:  var(--green);   /* 主队胜 */
-  --draw: var(--yellow);  /* 平 */
+  --draw: var(--orange);  /* 平(浅底上黄字看不清,用橙) */
   --lose: var(--red);     /* 客队胜 */
 
-  /* ===== 文字层级 ===== */
-  --text:  #f2f5ff;
-  --text2: #c2cbe6;
-  --muted: #8a96b8;
-  --muted2:#5f6b8a;
+  /* ===== 文字层级(瞻海) ===== */
+  --text:  #1d1d1f;
+  --text2: #515154;
+  --muted: #86868b;
+  --muted2:#b0b0b5;
 
-  /* ===== 分隔线 / 边框(暗色用浅描边) ===== */
-  --hair:    rgba(255, 255, 255, 0.08);
-  --hair2:   rgba(255, 255, 255, 0.12);
-  --sep:     rgba(255, 255, 255, 0.10);
+  /* ===== 分隔线 / 边框(浅色用深描边) ===== */
+  --hair:    rgba(0, 0, 0, 0.08);
+  --hair2:   rgba(0, 0, 0, 0.12);
+  --sep:     rgba(60, 60, 67, 0.18);
 
   /* ===== 双层阴影 + 顶部高光内描边(玻璃质感关键) ===== */
-  --shadow-1: 0 1px 3px rgba(0,0,0,0.30), 0 1px 2px rgba(0,0,0,0.24);
-  --shadow-2: 0 8px 28px rgba(0,0,0,0.42), 0 2px 6px rgba(0,0,0,0.30);
-  --shadow-3: 0 18px 48px rgba(0,0,0,0.50), 0 4px 12px rgba(0,0,0,0.34);
-  --glass-hi: inset 0 0.5px 0 rgba(255,255,255,0.14);
+  --shadow-1: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-2: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+  --shadow-3: 0 12px 32px rgba(0,0,0,0.10), 0 4px 8px rgba(0,0,0,0.06);
+  --glass-hi: inset 0 0.5px 0 rgba(255,255,255,0.60);
 
   /* ===== 圆角四档(瞻海) ===== */
   --r-icon: 8px;
@@ -77,11 +77,12 @@ body {
   letter-spacing: -0.006em;
   font-feature-settings: "tnum" 1, "ss01" 1;  /* 等宽数字,赔率/百分比对齐 */
   padding-bottom: 44px;
-  /* 环境光:多层径向渐变,让毛玻璃有丰富透出(瞻海手法,夜间调) */
+  /* 环境光:多层径向渐变,让毛玻璃有丰富透出(瞻海手法) */
   background-image:
-    radial-gradient(ellipse 55% 60% at 12% 0%,  rgba(10,132,255,0.18) 0%, transparent 60%),
-    radial-gradient(ellipse 50% 55% at 88% 4%,  rgba(191,90,242,0.13) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 50% at 50% 100%,rgba(48,209,88,0.07)  0%, transparent 60%);
+    radial-gradient(ellipse 55% 60% at 12% 0%,  rgba(0,113,227,0.12) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 55% at 88% 4%,  rgba(175,82,222,0.09) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 50% 100%,rgba(255,149,0,0.07) 0%, transparent 60%),
+    linear-gradient(180deg, var(--bg2) 0%, var(--bg) 100%);
   background-attachment: fixed;
 }
 
@@ -101,8 +102,8 @@ body {
   width: 24vmin; height: 24vmin;
   transform: translate(-50%, -50%);
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(120,170,255,0.30) 0%, rgba(10,132,255,0.10) 42%, transparent 70%);
-  filter: blur(6px);
+  background: radial-gradient(circle, rgba(0,113,227,0.16) 0%, rgba(0,113,227,0.06) 42%, transparent 70%);
+  filter: blur(8px);
 }
 .disc {
   position: absolute;
@@ -114,7 +115,7 @@ body {
   top: 50%; left: 50%;
   width: var(--d); height: var(--d);
   margin: calc(var(--d) / -2) 0 0 calc(var(--d) / -2);
-  border: 1px dashed rgba(130, 175, 255, 0.14);
+  border: 1px dashed rgba(0, 90, 200, 0.16);
   border-radius: 50%;
 }
 .arm {
@@ -134,8 +135,8 @@ body {
 .orb {
   display: block;
   transform: scaleY(1.82) rotate(8deg);
-  filter: drop-shadow(0 3px 10px rgba(0, 0, 0, 0.5));
-  opacity: 0.82;
+  filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.22));
+  opacity: 0.92;
 }
 @keyframes orbit-spin {
   from { transform: rotate(0deg); }
@@ -159,16 +160,19 @@ body {
 .side-ball.right { right: max(10px, calc(50% - 380px - 13vw)); }
 .side-ball img {
   width: 100%;
-  filter: drop-shadow(0 10px 28px rgba(0, 0, 0, 0.5));
+  filter: drop-shadow(0 12px 28px rgba(0, 0, 0, 0.22));
 }
 .side-ball span {
   display: block;
   margin-top: 10px;
-  font-weight: 700;
+  font-weight: 800;
   font-size: clamp(14px, 1.4vw, 20px);
   letter-spacing: 2px;
-  color: #ffd45e;
-  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.7), 0 0 5px rgba(255, 180, 40, 0.4);
+  background: linear-gradient(180deg, #f0a020 0%, #b45309 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 1px 1px rgba(0,0,0,0.12));
 }
 @media (max-width: 1180px) {
   .side-ball { display: none; }
@@ -184,16 +188,19 @@ body {
 }
 .mobile-ball img {
   width: clamp(140px, 42vw, 220px);
-  filter: drop-shadow(0 10px 28px rgba(0, 0, 0, 0.5));
+  filter: drop-shadow(0 12px 28px rgba(0, 0, 0, 0.22));
 }
 .mobile-ball span {
   display: block;
   margin-top: 12px;
-  font-weight: 700;
+  font-weight: 800;
   font-size: 18px;
   letter-spacing: 3px;
-  color: #ffd45e;
-  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.7), 0 0 5px rgba(255, 180, 40, 0.4);
+  background: linear-gradient(180deg, #f0a020 0%, #b45309 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 1px 1px rgba(0,0,0,0.12));
 }
 @media (max-width: 1180px) {
   .mobile-ball { display: block; }
@@ -213,7 +220,7 @@ body {
   font-size: clamp(24px, 5vw, 36px);
   font-weight: 700;
   letter-spacing: -0.024em;
-  background: linear-gradient(180deg, #ffffff 0%, #c8d4f5 100%);
+  background: linear-gradient(180deg, #1d1d1f 0%, #3a4a6b 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -270,7 +277,7 @@ body {
   border-color: transparent;
   color: #fff;
   font-weight: 600;
-  box-shadow: 0 4px 14px rgba(10,132,255,0.40), var(--glass-hi);
+  box-shadow: 0 4px 14px rgba(0,113,227,0.40), var(--glass-hi);
 }
 .date-tab .cnt { opacity: 0.7; font-size: 11px; margin-left: 4px; }
 
@@ -331,7 +338,7 @@ body {
   letter-spacing: -0.004em;
 }
 .calc-row input {
-  background: rgba(0,0,0,0.28);
+  background: #f5f5f7;
   border: 0.5px solid var(--hair2);
   border-radius: var(--r-btn);
   padding: 11px 13px;
@@ -346,14 +353,14 @@ body {
 .calc-row input:focus {
   outline: none;
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(10,132,255,0.22);
+  box-shadow: 0 0 0 3px rgba(0,113,227,0.22);
 }
 .calc-bet { margin-top: 11px; font-size: 13px; color: var(--accent); min-height: 16px; font-weight: 500; }
 .calc-result {
   margin-top: 11px;
   padding: 13px;
   border-radius: var(--r-btn);
-  background: rgba(0,0,0,0.24);
+  background: #f5f5f7;
   border: 0.5px solid var(--hair);
   font-size: 14px;
   color: var(--muted);
@@ -374,7 +381,7 @@ body {
   align-items: center;
   gap: 2px;
   padding: 9px 4px;
-  background: rgba(0,0,0,0.24);
+  background: #f5f5f7;
   border: 0.5px solid var(--hair2);
   border-radius: var(--r-btn);
   color: var(--muted);
@@ -385,7 +392,7 @@ body {
               transform var(--t-fast) var(--ease);
 }
 .odd-btn b { color: var(--accent); font-size: 15px; font-weight: 700; }
-.odd-btn:hover { border-color: var(--accent); background: rgba(10,132,255,0.14); transform: translateY(-1px); }
+.odd-btn:hover { border-color: var(--accent); background: rgba(0,113,227,0.14); transform: translateY(-1px); }
 .odd-btn:active { transform: scale(0.97); }
 
 /* ============================================
@@ -473,16 +480,16 @@ body {
   font-feature-settings: "tnum" 1;
 }
 .rec-money .win {
-  background: rgba(48, 209, 88, 0.14);
-  border: 0.5px solid rgba(48, 209, 88, 0.34);
+  background: rgba(52, 199, 89, 0.14);
+  border: 0.5px solid rgba(52, 199, 89, 0.34);
   color: var(--win);
   padding: 5px 9px;
   border-radius: 8px;
 }
 .rec-money .win b { font-size: 13px; font-weight: 700; }
 .rec-money .lose {
-  background: rgba(255, 69, 58, 0.12);
-  border: 0.5px solid rgba(255, 69, 58, 0.30);
+  background: rgba(255, 59, 48, 0.12);
+  border: 0.5px solid rgba(255, 59, 48, 0.30);
   color: var(--lose);
   padding: 5px 9px;
   border-radius: 8px;
@@ -520,7 +527,7 @@ body {
   font-size: 11px;
   color: var(--text2);
   background: rgba(10, 132, 255, 0.16);
-  border: 0.5px solid rgba(10,132,255,0.28);
+  border: 0.5px solid rgba(0,113,227,0.28);
   padding: 3px 9px;
   border-radius: var(--r-pill);
   font-feature-settings: "tnum" 1;
@@ -601,8 +608,8 @@ body {
 .footer .disclaimer {
   margin: 12px auto;
   max-width: 560px;
-  background: rgba(255, 69, 58, 0.08);
-  border: 0.5px solid rgba(255, 69, 58, 0.24);
+  background: rgba(255, 59, 48, 0.08);
+  border: 0.5px solid rgba(255, 59, 48, 0.24);
   border-radius: var(--r-btn);
   padding: 11px 15px;
   color: var(--text2);
