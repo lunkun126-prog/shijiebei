@@ -1,0 +1,43 @@
+{
+  "updated_at": "2026-06-22T04:00:00+00:00",
+  "source": "示例数据(接入真实 key 后由 GitHub Action 自动覆盖)",
+  "count": 4,
+  "matches": [
+    {
+      "home": "Argentina",
+      "away": "Saudi Arabia",
+      "kickoff_utc": "2026-06-22T16:00:00Z",
+      "p_home": 72.4,
+      "p_draw": 18.1,
+      "p_away": 9.5,
+      "books_n": 8
+    },
+    {
+      "home": "Brazil",
+      "away": "Croatia",
+      "kickoff_utc": "2026-06-22T19:00:00Z",
+      "p_home": 58.3,
+      "p_draw": 24.6,
+      "p_away": 17.1,
+      "books_n": 8
+    },
+    {
+      "home": "England",
+      "away": "France",
+      "kickoff_utc": "2026-06-23T02:00:00Z",
+      "p_home": 37.2,
+      "p_draw": 28.4,
+      "p_away": 34.4,
+      "books_n": 7
+    },
+    {
+      "home": "Germany",
+      "away": "Japan",
+      "kickoff_utc": "2026-06-23T13:00:00Z",
+      "p_home": 55.0,
+      "p_draw": 25.2,
+      "p_away": 19.8,
+      "books_n": 6
+    }
+  ]
+}

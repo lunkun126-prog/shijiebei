@@ -1,0 +1,42 @@
+name: 更新世界杯胜率数据
+
+on:
+  schedule:
+    # 每 4 小时跑一次(UTC)。世界杯期间足够;月用量约 180 次,远低于免费 500。
+    - cron: "0 */4 * * *"
+  workflow_dispatch: {} # 允许在 Actions 页手动触发
+
+permissions:
+  contents: write # 允许把更新后的 data.json 提交回仓库
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 配置 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: 安装依赖
+        run: pip install -r requirements.txt
+
+      - name: 抓取赔率并生成 data.json
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+        run: python scripts/fetch_odds.py
+
+      - name: 提交更新(若有变化)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if [ -n "$(git status --porcelain data.json)" ]; then
+            git add data.json
+            git commit -m "chore: 自动更新世界杯胜率数据"
+            git push
+          else
+            echo "data.json 无变化,跳过提交"
+          fi
