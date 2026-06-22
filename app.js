@@ -139,6 +139,108 @@ function escapeHtml(s) {
   );
 }
 
+// ===== 今日示例买法(全部从赔率自动算, 拿 ¥100 举例)=====
+const STAKE = 100;
+
+function favOf(m) {
+  const arr = [
+    { side: cn(m.home), odd: m.odd_home, p: m.p_home },
+    { side: "平局", odd: m.odd_draw, p: m.p_draw },
+    { side: cn(m.away), odd: m.odd_away, p: m.p_away },
+  ];
+  arr.sort((a, b) => b.p - a.p);
+  return arr[0];
+}
+
+// 按胜率给个最可能的比分(只是示例方向, 不是预言)
+function suggestScore(m) {
+  const f = favOf(m);
+  const strongHome = f.side === cn(m.home);
+  const lead = f.p >= 80 ? "2:0" : f.p >= 68 ? "2:1" : f.p >= 58 ? "1:0" : "1:1";
+  if (f.side === "平局") return "1:1";
+  return strongHome ? lead : lead.split(":").reverse().join(":");
+}
+
+function moneyBox(odd) {
+  const payout = STAKE * odd;
+  const profit = payout - STAKE;
+  return `<span class="win">中了拿回 <b>${fmtMoney(payout)}</b>,净赚 ${fmtMoney(profit)}</span>
+          <span class="lose">没中亏 ${fmtMoney(STAKE)}</span>`;
+}
+
+function recCard(tag, tagCls, matchLabel, pickHtml, moneyHtml, note) {
+  return `<div class="rec">
+    <div class="rec-head"><span class="rec-tag ${tagCls}">${tag}</span>
+      <span class="rec-match">${escapeHtml(matchLabel)}</span></div>
+    <div class="rec-pick">${pickHtml}</div>
+    <div class="rec-money">${moneyHtml}</div>
+    ${note ? `<div class="rec-note">${note}</div>` : ""}
+  </div>`;
+}
+
+function renderRecs(matches) {
+  const sec = document.getElementById("recs");
+  const list = document.getElementById("recsList");
+  const withOdds = matches.filter((m) => m.odd_home != null);
+  if (!sec || !list || withOdds.length === 0) {
+    if (sec) sec.hidden = true;
+    return;
+  }
+  // 只在还没开打的比赛里选(开球时间 > 现在)
+  const now = Date.now();
+  const pool = withOdds
+    .filter((m) => new Date(m.kickoff_utc).getTime() > now)
+    .map((m) => ({ m, f: favOf(m) }));
+  const use = pool.length ? pool : withOdds.map((m) => ({ m, f: favOf(m) }));
+  use.sort((a, b) => b.f.p - a.f.p);
+
+  const cards = [];
+  // 1) 稳胆:最被看好的一场, 买它赢(赔率低, 稳但赚得少)
+  const safe = use[0];
+  cards.push(
+    recCard(
+      "稳胆",
+      "safe",
+      `${cn(safe.m.home)} vs ${cn(safe.m.away)} · ${beijingTimeLabel(safe.m.kickoff_utc)}`,
+      `买 <b>${safe.f.side}</b>(胜率 ${safe.f.p}% · 倍率 ${safe.f.odd})`,
+      moneyBox(safe.f.odd),
+      `胜率高、倍率低 → 赢面大但赚得少。越稳的越不值钱,这就是规律。`
+    )
+  );
+  // 2) 价值/略博:胜率 55~72% 区间里最高的, 倍率适中
+  const value =
+    use.find((x) => x.f.p >= 55 && x.f.p <= 72) || use[Math.min(1, use.length - 1)];
+  if (value && value !== safe) {
+    cards.push(
+      recCard(
+        "性价比",
+        "value",
+        `${cn(value.m.home)} vs ${cn(value.m.away)} · ${beijingTimeLabel(value.m.kickoff_utc)}`,
+        `买 <b>${value.f.side}</b>(胜率 ${value.f.p}% · 倍率 ${value.f.odd})`,
+        moneyBox(value.f.odd),
+        `胜率没那么悬殊、倍率高一点 → 风险和回报相对平衡。`
+      )
+    );
+  }
+  // 3) 比分(竞彩没有现成赔率, 给方向 + 让你去 App 看实际倍率填计算器)
+  const sc = safe;
+  const scLine = suggestScore(sc.m);
+  cards.push(
+    recCard(
+      "猜比分",
+      "score",
+      `${cn(sc.m.home)} vs ${cn(sc.m.away)} · ${beijingTimeLabel(sc.m.kickoff_utc)}`,
+      `猜 <b>${scLine}</b>(${sc.f.side}赢面大,最可能这个方向)`,
+      `<span class="lose">猜中赚得多、猜错亏 ${fmtMoney(STAKE)}</span>`,
+      `⚠️ 比分玩法倍率盘口里没有,本页给不了精确数。强队 2:0 在竞彩通常 <b>7~10 倍</b>(¥100 猜中约赚 ¥600~900)。
+       到竞彩 App 看到真实倍率后,填进上面计算器就能算出能赚多少。比分极难中,纯属娱乐。`
+    )
+  );
+
+  list.innerHTML = cards.join("");
+  sec.hidden = false;
+}
+
 let GROUPED = {}; // dateKey -> [matches]
 let DATE_KEYS = [];
 
@@ -222,6 +324,8 @@ async function init() {
       board.innerHTML = `<div class="state">近期暂无世界杯比赛盘口 🏖️</div>`;
       return;
     }
+
+    renderRecs(matches);
 
     GROUPED = {};
     matches.forEach((m) => {
