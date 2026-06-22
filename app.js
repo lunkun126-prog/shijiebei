@@ -3,6 +3,37 @@
 
 const CN_TZ_OFFSET = 8 * 60; // 北京时间 UTC+8(分钟)
 
+// 英文队名 -> 中文(接口返回英文,前端翻译;表里没有的原样显示英文)
+const TEAM_CN = {
+  "Argentina": "阿根廷", "Austria": "奥地利", "Australia": "澳大利亚",
+  "Belgium": "比利时", "Brazil": "巴西", "Bosnia & Herzegovina": "波黑",
+  "Canada": "加拿大", "Cape Verde": "佛得角", "Colombia": "哥伦比亚",
+  "Croatia": "克罗地亚", "Curaçao": "库拉索", "Czech Republic": "捷克",
+  "Denmark": "丹麦", "DR Congo": "刚果(金)", "Ecuador": "厄瓜多尔",
+  "Egypt": "埃及", "England": "英格兰", "France": "法国", "Germany": "德国",
+  "Ghana": "加纳", "Greece": "希腊", "Haiti": "海地", "Honduras": "洪都拉斯",
+  "Iran": "伊朗", "Iraq": "伊拉克", "Italy": "意大利", "Ivory Coast": "科特迪瓦",
+  "Jamaica": "牙买加", "Japan": "日本", "Jordan": "约旦", "Mexico": "墨西哥",
+  "Morocco": "摩洛哥", "Netherlands": "荷兰", "New Zealand": "新西兰",
+  "Nigeria": "尼日利亚", "Norway": "挪威", "Panama": "巴拿马",
+  "Paraguay": "巴拉圭", "Peru": "秘鲁", "Poland": "波兰", "Portugal": "葡萄牙",
+  "Qatar": "卡塔尔", "Saudi Arabia": "沙特阿拉伯", "Scotland": "苏格兰",
+  "Senegal": "塞内加尔", "Serbia": "塞尔维亚", "Slovenia": "斯洛文尼亚",
+  "South Africa": "南非", "South Korea": "韩国", "Spain": "西班牙",
+  "Sweden": "瑞典", "Switzerland": "瑞士", "Tunisia": "突尼斯",
+  "Turkey": "土耳其", "Türkiye": "土耳其", "Ukraine": "乌克兰",
+  "United States": "美国", "USA": "美国", "Uruguay": "乌拉圭",
+  "Uzbekistan": "乌兹别克斯坦", "Wales": "威尔士", "Algeria": "阿尔及利亚",
+  "Cameroon": "喀麦隆", "Costa Rica": "哥斯达黎加", "Mali": "马里",
+  "Hungary": "匈牙利", "Romania": "罗马尼亚", "Venezuela": "委内瑞拉",
+  "Bolivia": "玻利维亚", "Chile": "智利", "Finland": "芬兰", "Israel": "以色列",
+  "New Caledonia": "新喀里多尼亚", "Bolivia ": "玻利维亚", "Congo DR": "刚果(金)",
+};
+
+function cn(name) {
+  return TEAM_CN[name] || name;
+}
+
 // 把 UTC 时间转成北京时间的 Date 部件
 function toBeijing(utcStr) {
   const d = new Date(utcStr);
@@ -50,9 +81,9 @@ function dateTabLabel(key) {
 
 function favoredText(m) {
   const arr = [
-    { side: m.home, p: m.p_home },
+    { side: cn(m.home), p: m.p_home },
     { side: "平局", p: m.p_draw },
-    { side: m.away, p: m.p_away },
+    { side: cn(m.away), p: m.p_away },
   ].sort((a, b) => b.p - a.p);
   return `${arr[0].side} 占优(${arr[0].p}%)`;
 }
@@ -66,9 +97,9 @@ function matchCard(m) {
       <span class="books">${m.books_n} 家盘口</span>
     </div>
     <div class="teams">
-      <span class="team home">${escapeHtml(m.home)}</span>
+      <span class="team home">${escapeHtml(cn(m.home))}</span>
       <span class="vs">VS</span>
-      <span class="team away">${escapeHtml(m.away)}</span>
+      <span class="team away">${escapeHtml(cn(m.away))}</span>
     </div>
     <div class="prob-bar">
       <div class="seg win" style="flex-basis:${m.p_home}%">${m.p_home}%</div>
