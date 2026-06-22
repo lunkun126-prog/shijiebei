@@ -146,66 +146,6 @@ body {
   .arm, .orbwrap { animation: none; }
 }
 
-/* ===== 两侧空白处的"合影足球" ===== */
-.side-ball {
-  position: fixed;
-  top: 50%;
-  transform: translateY(-50%);
-  width: clamp(120px, 15vw, 200px);
-  z-index: 2;
-  text-align: center;
-  pointer-events: none;
-}
-.side-ball.left  { left: max(10px, calc(50% - 380px - 13vw)); }
-.side-ball.right { right: max(10px, calc(50% - 380px - 13vw)); }
-.side-ball img {
-  width: 100%;
-  filter: drop-shadow(0 12px 28px rgba(0, 0, 0, 0.22));
-}
-.side-ball span {
-  display: block;
-  margin-top: 10px;
-  font-weight: 800;
-  font-size: clamp(14px, 1.4vw, 20px);
-  letter-spacing: 2px;
-  background: linear-gradient(180deg, #f0a020 0%, #b45309 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 1px 1px rgba(0,0,0,0.12));
-}
-@media (max-width: 1180px) {
-  .side-ball { display: none; }
-}
-
-/* 手机版:在内容流里居中显示一颗合影球 */
-.mobile-ball {
-  display: none;
-  text-align: center;
-  margin: 30px auto 0;
-  position: relative;
-  z-index: 1;
-}
-.mobile-ball img {
-  width: clamp(140px, 42vw, 220px);
-  filter: drop-shadow(0 12px 28px rgba(0, 0, 0, 0.22));
-}
-.mobile-ball span {
-  display: block;
-  margin-top: 12px;
-  font-weight: 800;
-  font-size: 18px;
-  letter-spacing: 3px;
-  background: linear-gradient(180deg, #f0a020 0%, #b45309 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 1px 1px rgba(0,0,0,0.12));
-}
-@media (max-width: 1180px) {
-  .mobile-ball { display: block; }
-}
-
 /* 内容压在背景球上面 */
 .topbar, .date-tabs, .calc, .recs, .board, .footer { position: relative; z-index: 1; }
 
