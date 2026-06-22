@@ -14,6 +14,22 @@
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* 朋友合影做成的足球, 30% 透明放右下空白角当背景装饰 */
+.ball-bg {
+  position: fixed;
+  right: -50px;
+  bottom: -50px;
+  width: clamp(200px, 38vw, 340px);
+  height: clamp(200px, 38vw, 340px);
+  background: url("assets/ball.png") center/contain no-repeat;
+  opacity: 0.3;
+  z-index: 0;
+  pointer-events: none;
+  filter: drop-shadow(0 6px 20px rgba(0, 0, 0, 0.4));
+}
+/* 内容压在球上面 */
+.topbar, .date-tabs, .board, .footer { position: relative; z-index: 1; }
+
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
     "Microsoft YaHei", Roboto, sans-serif;
