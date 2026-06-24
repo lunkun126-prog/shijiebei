@@ -715,6 +715,74 @@ body.calc-open .calc-backdrop { opacity: 1; pointer-events: auto; }
   box-shadow: var(--shadow-1), var(--glass-hi);
 }
 .val-banner b { color: #0a7d2c; font-weight: 800; }
+
+/* ===== 赛后对照(模型 vs 真实赛果)===== */
+/* 当天命中率汇总条 */
+.recap-banner {
+  margin-bottom: 14px;
+  padding: 11px 14px;
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--text2);
+  background: linear-gradient(180deg, rgba(0,113,227,0.08), rgba(0,113,227,0.015)), var(--card-strong);
+  border: 0.5px solid var(--hair2);
+  border-left: 4px solid var(--blue);
+  border-radius: var(--r-btn);
+  box-shadow: var(--shadow-1), var(--glass-hi);
+}
+.recap-banner b { color: var(--text); font-weight: 800; }
+/* 出结果的卡片:命中描绿 / 爆冷描橙 */
+.match-card.has-result.hit  { border-left-color: var(--green); }
+.match-card.has-result.miss { border-left-color: var(--orange); }
+/* 卡片底部赛后对照条 */
+.result-row {
+  margin-top: 13px;
+  padding: 11px 13px;
+  border-radius: var(--r-btn);
+  border: 0.5px solid var(--hair);
+}
+.result-row.is-hit  { background: linear-gradient(180deg, rgba(52,199,89,0.12), rgba(52,199,89,0.03)); border-color: rgba(52,199,89,0.32); }
+.result-row.is-miss { background: linear-gradient(180deg, rgba(255,149,0,0.13), rgba(255,149,0,0.03)); border-color: rgba(255,149,0,0.34); }
+.res-head { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.res-title { font-size: 12px; font-weight: 700; color: var(--text2); letter-spacing: -0.005em; }
+.res-badge {
+  font-size: 11px;
+  font-weight: 800;
+  padding: 2px 9px;
+  border-radius: var(--r-pill);
+  color: #fff;
+  background-image: linear-gradient(180deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 55%);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.25);
+}
+.res-badge.res-hit  { background-color: var(--green); }
+.res-badge.res-miss { background-color: var(--orange); }
+.res-score {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+.res-score .rs-team { font-size: 14px; }
+.res-score .rs-num { font-size: 20px; font-weight: 800; font-feature-settings: "tnum" 1; }
+.res-score .rs-dash { color: var(--muted); margin: 0 -2px; }
+.res-prov {
+  margin-left: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #9a6400;
+  background: rgba(255,204,0,0.22);
+  border: 0.5px solid rgba(255,204,0,0.5);
+  border-radius: var(--r-pill);
+  padding: 2px 7px;
+  letter-spacing: 0;
+}
+.res-verdict { margin-top: 8px; font-size: 12px; line-height: 1.6; color: var(--text2); }
+.res-verdict b { color: var(--text); font-weight: 700; }
+.res-note { margin-top: 5px; font-size: 11px; color: var(--muted); line-height: 1.5; }
+
 .match-head {
   display: flex;
   justify-content: space-between;

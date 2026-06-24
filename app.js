@@ -115,6 +115,33 @@ function jcOf(m) {
   return JINGCAI[jcKey(m)] || null;
 }
 
+// ===== 赛后对照(results.json)=====
+// 键同 jcKey, 值 { hs, as, note?, provisional? }(hs/as=主/客进球数)。
+// 站长赛后日更提交 results.json, 前端把"赛前测算"和"真实赛果"摆一起看命中。
+let RESULTS = {};
+function resOf(m) {
+  return RESULTS[jcKey(m)] || null;
+}
+// 比分 -> 胜负方
+function outcomeOf(hs, as) {
+  return hs > as ? "home" : hs < as ? "away" : "draw";
+}
+// 模型当时最看好的结果(取三概率最大者), 返回 'home'|'draw'|'away'
+function favOutcome(m) {
+  const arr = [
+    ["home", m.p_home],
+    ["draw", m.p_draw],
+    ["away", m.p_away],
+  ].sort((a, b) => b[1] - a[1]);
+  return arr[0][0];
+}
+// 某结果的中文标签 + 该结果的市场概率
+function outcomeLabel(m, oc) {
+  if (oc === "home") return { name: cn(m.home) + " 胜", p: m.p_home };
+  if (oc === "away") return { name: cn(m.away) + " 胜", p: m.p_away };
+  return { name: "平局", p: m.p_draw };
+}
+
 // 单个结果的价值:公平概率(Pinnacle 去水位)× 你实际能拿到的赔率 − 1
 // 实际赔率优先用竞彩(你真去买的), 没填则退回国际盘均值
 function valueOf(p, marketOdd, jcOdd) {
@@ -135,10 +162,44 @@ function cardHasValue(m) {
   );
 }
 
+// 赛后对照条:有真实赛果才显示, 把"模型看好"和"实际结果"摆一起标命中/爆冷
+function resultRow(m) {
+  const r = resOf(m);
+  if (!r || r.hs == null || r.as == null) return "";
+  const actual = outcomeOf(r.hs, r.as);
+  const fav = favOutcome(m);
+  const hit = actual === fav;
+  const favL = outcomeLabel(m, fav);
+  const actL = outcomeLabel(m, actual);
+  const prov = r.provisional ? `<span class="res-prov">待核实</span>` : "";
+  const note = r.note ? `<div class="res-note">${escapeHtml(r.note)}</div>` : "";
+  const badge = hit
+    ? `<span class="res-badge res-hit">✓ 命中</span>`
+    : `<span class="res-badge res-miss">✗ 爆冷</span>`;
+  const verdict = hit
+    ? `模型看好 <b>${escapeHtml(favL.name)}(${favL.p}%)</b>,实际 <b>${escapeHtml(actL.name)}</b> —— 方向对了。`
+    : `模型看好 <b>${escapeHtml(favL.name)}(${favL.p}%)</b>,实际却是 <b>${escapeHtml(actL.name)}</b> —— 大热没踢出来。`;
+  return `
+    <div class="result-row ${hit ? "is-hit" : "is-miss"}">
+      <div class="res-head">
+        <span class="res-title">🏁 赛后对照</span>${badge}
+      </div>
+      <div class="res-score">
+        <span class="rs-team">${escapeHtml(cn(m.home))}</span>
+        <span class="rs-num">${r.hs}</span><span class="rs-dash">-</span><span class="rs-num">${r.as}</span>
+        <span class="rs-team">${escapeHtml(cn(m.away))}</span>${prov}
+      </div>
+      <div class="res-verdict">${verdict}</div>
+      ${note}
+    </div>`;
+}
+
 function matchCard(m) {
   const card = document.createElement("div");
   const hasValue = cardHasValue(m);
-  card.className = "match-card" + (hasValue ? " has-value" : "");
+  const r = resOf(m);
+  const resCls = r && r.hs != null ? (outcomeOf(r.hs, r.as) === favOutcome(m) ? " has-result hit" : " has-result miss") : "";
+  card.className = "match-card" + (hasValue ? " has-value" : "") + resCls;
   // C4:三段同一灰蓝, 深浅(alpha)随概率, 不再用红绿暗示胜负
   const seg = (p) =>
     `<div class="seg" style="flex-basis:${p}%;--depth:${(0.3 + 0.6 * p / 100).toFixed(3)}">${p}%</div>`;
@@ -158,6 +219,7 @@ function matchCard(m) {
     <div class="prob-legend">条宽=市场胜率(左 主胜 · 中 平 · 右 客胜)· 颜色不分胜负</div>
     <div class="honest">📊 ${honestLine(m)}</div>
     ${oddsRow(m)}
+    ${resultRow(m)}
   `;
   return card;
 }
@@ -415,6 +477,20 @@ function render(activeKey) {
     ? `🔎 价值扫描:这一天 ${list.length} 场里发现 <b>${valCount}</b> 注理论有价值(公平胜率 × 可下注赔率 ≥ +3%),已用<b>绿色</b>标出。仍非稳赢,只是长期占一点便宜。`
     : `🔎 价值扫描:这一天 ${list.length} 场<b>没扫到</b>有价值的注 —— 这很正常,绝大多数注长期都是负期望(在交水位)。`;
   board.appendChild(banner);
+
+  // 赛后对照汇总:当天有出结果的场就数命中率
+  const played = list.filter((m) => {
+    const r = resOf(m);
+    return r && r.hs != null && r.as != null;
+  });
+  if (played.length) {
+    const hits = played.filter((m) => outcomeOf(resOf(m).hs, resOf(m).as) === favOutcome(m)).length;
+    const recap = document.createElement("div");
+    recap.className = "recap-banner";
+    recap.innerHTML = `🏁 赛后对照:这一天 <b>${played.length}</b> 场已出结果,模型胜负命中 <b>${hits}/${played.length}</b>。下方每张卡片底部有逐场对照(✓命中 / ✗爆冷)。`;
+    board.appendChild(recap);
+  }
+
   list.forEach((m) => board.appendChild(matchCard(m)));
 }
 
@@ -596,6 +672,12 @@ async function init() {
       const jr = await fetch("jingcai.json?t=" + Date.now());
       if (jr.ok) JINGCAI = await jr.json();
     } catch (e) { /* 没填就算了 */ }
+
+    // 赛后真实赛果(可选;没有 results.json 也不报错, 不显示对照)
+    try {
+      const rr = await fetch("results.json?t=" + Date.now());
+      if (rr.ok) RESULTS = await rr.json();
+    } catch (e) { /* 还没出结果就算了 */ }
 
     // 录入模式:打开 #luru 直接出录入面板, 不渲染看板
     if (maybeRenderAdmin(matches)) return;
