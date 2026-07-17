@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-07-17T08:16:06+00:00",
+  "updated_at": "2026-07-17T13:46:30+00:00",
   "source": "the-odds-api.com (h2h, eu bookmakers, 去水位均值)",
   "count": 2,
   "matches": [
@@ -10,17 +10,17 @@
       "fair_src": "pinnacle",
       "p_home": 50.4,
       "p_draw": 24.6,
-      "p_away": 24.9,
-      "odd_home": 1.9,
-      "odd_draw": 3.88,
-      "odd_away": 3.86,
-      "books_n": 25,
+      "p_away": 25.0,
+      "odd_home": 1.91,
+      "odd_draw": 3.93,
+      "odd_away": 3.8,
+      "books_n": 24,
       "spread_point": 0.0,
       "spread_home_odd": 1.44,
       "spread_away_odd": 2.94,
       "total_point": 3.5,
-      "over_odd": 2.1,
-      "under_odd": 1.73
+      "over_odd": 2.11,
+      "under_odd": 1.72
     },
     {
       "home": "Spain",
@@ -30,15 +30,15 @@
       "p_home": 41.9,
       "p_draw": 31.6,
       "p_away": 26.5,
-      "odd_home": 2.3,
-      "odd_draw": 3.05,
-      "odd_away": 3.59,
-      "books_n": 25,
+      "odd_home": 2.31,
+      "odd_draw": 3.07,
+      "odd_away": 3.57,
+      "books_n": 24,
       "spread_point": 0.0,
       "spread_home_odd": 1.57,
       "spread_away_odd": 2.51,
       "total_point": 2.5,
-      "over_odd": 2.23,
+      "over_odd": 2.24,
       "under_odd": 1.65
     }
   ]
