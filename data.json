@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-07-18T02:47:35+00:00",
+  "updated_at": "2026-07-18T07:58:06+00:00",
   "source": "the-odds-api.com (h2h, eu bookmakers, 去水位均值)",
   "count": 2,
   "matches": [
@@ -8,38 +8,38 @@
       "away": "England",
       "kickoff_utc": "2026-07-18T21:00:00Z",
       "fair_src": "pinnacle",
-      "p_home": 50.6,
-      "p_draw": 24.6,
-      "p_away": 24.8,
+      "p_home": 51.4,
+      "p_draw": 23.3,
+      "p_away": 25.3,
       "odd_home": 1.88,
-      "odd_draw": 3.94,
-      "odd_away": 3.88,
+      "odd_draw": 4.04,
+      "odd_away": 3.83,
       "books_n": 25,
       "spread_point": 0.0,
-      "spread_home_odd": 1.45,
-      "spread_away_odd": 2.9,
+      "spread_home_odd": 1.46,
+      "spread_away_odd": 2.86,
       "total_point": 3.5,
-      "over_odd": 2.12,
-      "under_odd": 1.74
+      "over_odd": 2.14,
+      "under_odd": 1.72
     },
     {
       "home": "Spain",
       "away": "Argentina",
       "kickoff_utc": "2026-07-19T19:00:00Z",
       "fair_src": "pinnacle",
-      "p_home": 41.7,
-      "p_draw": 31.9,
-      "p_away": 26.4,
-      "odd_home": 2.31,
+      "p_home": 42.1,
+      "p_draw": 31.7,
+      "p_away": 26.2,
+      "odd_home": 2.3,
       "odd_draw": 3.07,
-      "odd_away": 3.58,
+      "odd_away": 3.59,
       "books_n": 25,
       "spread_point": 0.0,
-      "spread_home_odd": 1.58,
-      "spread_away_odd": 2.48,
+      "spread_home_odd": 1.57,
+      "spread_away_odd": 2.51,
       "total_point": 2.5,
       "over_odd": 2.25,
-      "under_odd": 1.65
+      "under_odd": 1.64
     }
   ]
 }
