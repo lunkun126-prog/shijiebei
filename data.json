@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-07-19T08:24:55+00:00",
+  "updated_at": "2026-07-19T13:25:29+00:00",
   "source": "the-odds-api.com (h2h, eu bookmakers, 去水位均值)",
   "count": 1,
   "matches": [
@@ -8,19 +8,19 @@
       "away": "Argentina",
       "kickoff_utc": "2026-07-19T19:00:00Z",
       "fair_src": "pinnacle",
-      "p_home": 42.3,
-      "p_draw": 31.8,
-      "p_away": 26.0,
+      "p_home": 42.0,
+      "p_draw": 31.6,
+      "p_away": 26.4,
       "odd_home": 2.31,
-      "odd_draw": 3.05,
-      "odd_away": 3.61,
-      "books_n": 25,
+      "odd_draw": 3.06,
+      "odd_away": 3.59,
+      "books_n": 24,
       "spread_point": 0.0,
-      "spread_home_odd": 1.56,
-      "spread_away_odd": 2.52,
+      "spread_home_odd": 1.59,
+      "spread_away_odd": 2.46,
       "total_point": 2.5,
-      "over_odd": 2.32,
-      "under_odd": 1.61
+      "over_odd": 2.3,
+      "under_odd": 1.62
     }
   ]
 }
